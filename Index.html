@@ -3,1249 +3,866 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Royaume des Champignons</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>Château & Chevaliers</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
 <style>
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-
-:root {
-  --bg: #1a0a2e;
-  --bg2: #0d1f0e;
-  --player: #7fff4f;
-  --player-dark: #3db800;
-  --player-glow: rgba(127,255,79,0.4);
-  --enemy: #c0392b;
-  --enemy-dark: #7b0000;
-  --enemy-glow: rgba(192,57,43,0.4);
-  --neutral: #2d4a2d;
-  --neutral-border: #3d6b3d;
-  --font-title: 'Fredoka One', cursive;
-  --font-body: 'Nunito', sans-serif;
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --gold:#f0c040;--gold2:#c8880a;--gold3:#7a4a00;
+  --red:#c0392b;--red2:#7b0000;
+  --green:#27ae60;--green2:#1a6b3a;
+  --blue:#1a3a6b;--sky1:#0a1628;--sky2:#162848;
+  --grass1:#1e4d0f;--grass2:#0d2806;
+  --stone1:#6b5a44;--stone2:#3a2e1e;
+  --card-bg:linear-gradient(160deg,#1e2d50 0%,#0d1630 60%,#060c1e 100%);
+  --card-border:rgba(240,192,64,.32);
+  --panel:rgba(5,8,18,.92);
+  --font-t:'Cinzel Decorative',serif;
+  --font-h:'Cinzel',serif;
+  --font-b:'IM Fell English',serif;
 }
+html,body{width:100%;height:100%;overflow:hidden;background:#050810;font-family:var(--font-b);color:#fff;user-select:none;touch-action:none;}
 
-html, body {
-  width:100%; height:100%;
-  overflow: hidden;
-  background: var(--bg);
-  font-family: var(--font-body);
-  color: #fff;
-  user-select: none;
-  touch-action: none;
+/* ═══════════════════════════════════
+   SCREENS
+═══════════════════════════════════ */
+.screen{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;text-align:center;}
+.screen.hidden{display:none;}
+
+/* ═══════════════════════════════════
+   START SCREEN
+═══════════════════════════════════ */
+#startScreen{
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(240,192,64,.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 80%, rgba(192,57,43,.08) 0%, transparent 50%),
+    linear-gradient(160deg,#06101e 0%,#030608 100%);
 }
+/* Animated torch lights */
+.torch{position:absolute;width:3px;height:60px;background:linear-gradient(to top,transparent,rgba(240,150,30,.6));animation:torchFlicker var(--d,1.2s) ease-in-out infinite alternate;}
+.torch::after{content:'🔥';position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:1.1rem;filter:drop-shadow(0 0 8px rgba(240,120,20,.8));}
+@keyframes torchFlicker{0%{opacity:.7;transform:scaleX(1);}100%{opacity:1;transform:scaleX(1.15);}}
+.torch-l{left:14px;bottom:30%;--d:1.1s;}
+.torch-r{right:14px;bottom:30%;--d:1.3s;}
 
-/* ── BACKGROUND ── */
-#bg-canvas {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
+.start-crest{font-size:4rem;margin-bottom:4px;filter:drop-shadow(0 0 20px rgba(240,192,64,.4));animation:crestPulse 3s ease-in-out infinite;}
+@keyframes crestPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.04);filter:drop-shadow(0 0 30px rgba(240,192,64,.6));}}
+.start-title{font-family:var(--font-t);font-size:1.5rem;font-weight:900;line-height:1.15;margin-bottom:3px;
+  background:linear-gradient(160deg,#fff8e0 0%,var(--gold) 40%,#c8780a 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 2px 12px rgba(240,192,64,.3));}
+.start-tagline{font-family:var(--font-h);font-size:.6rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:28px;}
+
+.start-banner{width:100%;max-width:340px;padding:14px;margin-bottom:24px;
+  background:rgba(0,0,0,.4);border:1px solid rgba(240,192,64,.2);border-radius:4px;
+  position:relative;}
+.start-banner::before,.start-banner::after{content:'✦';position:absolute;top:8px;color:var(--gold);font-size:.7rem;opacity:.5;}
+.start-banner::before{left:10px;}.start-banner::after{right:10px;}
+.start-preview{display:flex;gap:8px;justify-content:center;}
+.sprev{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.sprev-e{font-size:1.6rem;filter:drop-shadow(0 2px 6px rgba(0,0,0,.6));}
+.sprev-n{font-family:var(--font-h);font-size:.5rem;color:var(--gold);letter-spacing:.5px;}
+
+.btn-start{
+  background:linear-gradient(135deg,#f0c040 0%,#c8880a 50%,#7a4a00 100%);
+  border:none;border-radius:3px;padding:15px 50px;
+  font-family:var(--font-h);font-size:.95rem;font-weight:700;letter-spacing:2px;
+  color:#1a0800;cursor:pointer;position:relative;overflow:hidden;
+  box-shadow:0 4px 0 #3a2000, 0 6px 24px rgba(240,192,64,.35);
+  transition:transform .12s,box-shadow .12s;}
+.btn-start::before{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(255,255,255,.15),transparent);pointer-events:none;}
+.btn-start:active{transform:translateY(3px);box-shadow:0 1px 0 #3a2000,0 2px 8px rgba(240,192,64,.2);}
+
+/* ═══════════════════════════════════
+   DECK BUILDER
+═══════════════════════════════════ */
+#deckScreen{
+  background:linear-gradient(160deg,#080f1e 0%,#040810 100%);
+  overflow-y:auto;justify-content:flex-start;padding:10px 12px 20px;gap:0;
 }
+.deck-header{width:100%;max-width:400px;display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:8px;}
+.deck-title{font-family:var(--font-t);font-size:1rem;color:var(--gold);letter-spacing:1px;}
+.deck-sub{font-family:var(--font-h);font-size:.58rem;letter-spacing:2px;color:rgba(255,255,255,.3);text-transform:uppercase;}
 
-/* ── SCREENS ── */
-.screen {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  text-align: center;
-}
-.screen.hidden { display: none; }
+/* Deck slots row */
+.deck-slots-wrap{width:100%;max-width:400px;margin-bottom:8px;}
+.deck-slots-label{font-family:var(--font-h);font-size:.55rem;letter-spacing:2px;color:rgba(255,255,255,.3);text-transform:uppercase;margin-bottom:5px;}
+.deck-slots{display:flex;flex-wrap:wrap;gap:5px;padding:8px;
+  background:rgba(0,0,0,.5);border:1px solid rgba(240,192,64,.18);border-radius:6px;}
+.dslot{width:38px;height:44px;border:1.5px dashed rgba(240,192,64,.25);border-radius:6px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  background:rgba(0,0,0,.3);cursor:pointer;transition:all .15s;font-size:1.2rem;}
+.dslot.filled{border-style:solid;border-color:rgba(240,192,64,.5);background:rgba(240,192,64,.07);}
+.dslot-name{font-family:var(--font-h);font-size:.32rem;color:var(--gold);letter-spacing:.2px;text-align:center;line-height:1;}
+.dslot:active{transform:scale(.88);}
+.deck-progress{font-family:var(--font-h);font-size:.6rem;color:rgba(255,255,255,.4);text-align:center;margin-bottom:8px;}
+.deck-progress span{color:var(--gold);font-weight:700;}
 
-/* ── START SCREEN ── */
-#startScreen {
-  background: radial-gradient(ellipse at 50% 30%, #1e3d1a 0%, #0a160a 100%);
-}
+/* All cards */
+.all-cards-label{font-family:var(--font-h);font-size:.55rem;letter-spacing:2px;color:rgba(255,255,255,.3);text-transform:uppercase;width:100%;max-width:400px;margin-bottom:5px;}
+.all-cards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:100%;max-width:400px;margin-bottom:14px;}
+.acard{
+  background:var(--card-bg);border:1.5px solid var(--card-border);
+  border-radius:10px;padding:7px 3px 5px;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  cursor:pointer;transition:all .15s;position:relative;overflow:hidden;}
+.acard::before{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(255,255,255,.05),transparent 40%);pointer-events:none;}
+.acard.sel{border-color:var(--gold);background:linear-gradient(160deg,rgba(240,192,64,.18),rgba(240,192,64,.04));}
+.acard.sel::after{content:'✓';position:absolute;top:2px;left:5px;font-size:.6rem;color:var(--gold);font-family:var(--font-h);}
+.acard.dim{opacity:.3;filter:grayscale(.8);pointer-events:none;}
+.acard:active:not(.dim){transform:scale(.92);}
+.acard-rarity{position:absolute;top:0;left:0;right:0;height:2px;border-radius:10px 10px 0 0;}
+.acard-rarity.common{background:rgba(180,180,180,.5);}
+.acard-rarity.rare{background:linear-gradient(90deg,rgba(64,160,240,.8),rgba(120,200,255,.8));}
+.acard-rarity.epic{background:linear-gradient(90deg,rgba(160,64,240,.8),rgba(200,120,255,.8));}
+.acard-rarity.legend{background:linear-gradient(90deg,var(--gold),#ff9f43,var(--gold));}
+.acard-emoji{font-size:1.6rem;line-height:1;margin-top:2px;}
+.acard-name{font-family:var(--font-h);font-size:.45rem;color:#e8d8a0;letter-spacing:.3px;text-align:center;}
+.acard-type{font-size:.38rem;color:rgba(255,255,255,.32);letter-spacing:.5px;font-family:var(--font-h);}
+.acard-cost{position:absolute;top:3px;right:4px;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  border-radius:50%;width:16px;height:16px;
+  font-family:var(--font-h);font-size:.5rem;
+  display:flex;align-items:center;justify-content:center;
+  color:#1a0800;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.5);}
+.acard-stats{font-size:.38rem;color:rgba(255,255,255,.38);font-family:var(--font-h);}
 
-.title-wrap {
-  margin-bottom: 8px;
-  animation: titleBounce 1.5s ease-in-out infinite;
-}
+.btn-play-deck{
+  width:100%;max-width:400px;
+  background:linear-gradient(135deg,#f0c040,#c8880a,#7a4a00);
+  border:none;border-radius:3px;padding:14px;
+  font-family:var(--font-h);font-size:.9rem;font-weight:700;letter-spacing:2px;
+  color:#1a0800;cursor:pointer;
+  box-shadow:0 3px 0 #3a2000,0 5px 20px rgba(240,192,64,.3);
+  transition:transform .12s,box-shadow .12s,opacity .2s;}
+.btn-play-deck:active{transform:translateY(2px);box-shadow:0 1px 0 #3a2000;}
+.btn-play-deck:disabled{opacity:.35;pointer-events:none;}
 
-@keyframes titleBounce {
-  0%,100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
+/* ═══════════════════════════════════
+   GAME WRAP
+═══════════════════════════════════ */
+#gameWrap{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;}
 
-.title-emoji { font-size: 3.5rem; display: block; margin-bottom: 4px; }
+/* ── Enemy castle top ── */
+#enemyCastleZone{
+  flex:0 0 auto;
+  display:flex;flex-direction:column;align-items:center;
+  padding:6px 0 4px;
+  background:linear-gradient(to bottom,rgba(5,8,18,.95),transparent);
+  position:relative;z-index:20;}
+.castle-block{display:flex;flex-direction:column;align-items:center;gap:1px;}
+.castle-name-tag{font-family:var(--font-h);font-size:.45rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:1px;}
+.castle-icon-wrap{position:relative;display:inline-block;}
+.castle-icon{font-size:2.8rem;filter:drop-shadow(0 4px 12px rgba(0,0,0,.9));}
+.castle-hp-pill{
+  display:flex;align-items:center;gap:5px;
+  padding:3px 12px;border-radius:20px;margin-top:2px;
+  font-family:var(--font-h);font-size:.75rem;font-weight:700;}
+.castle-hp-pill.enemy{
+  background:rgba(192,57,43,.2);border:1.5px solid rgba(192,57,43,.45);color:#ff6b5b;}
+.castle-hp-pill.player{
+  background:rgba(39,174,96,.2);border:1.5px solid rgba(39,174,96,.45);color:#4ade80;}
+.hp-heart{font-size:.8rem;}
+.hp-bar-h{width:80px;height:5px;background:rgba(255,255,255,.1);border-radius:5px;overflow:hidden;}
+.hp-bar-fill{height:100%;border-radius:5px;transition:width .5s ease;}
+.hp-bar-fill.enemy{background:linear-gradient(90deg,#7b0000,#e74c3c);}
+.hp-bar-fill.player{background:linear-gradient(90deg,#1a6b3a,#2ecc71);}
 
-.game-title {
-  font-family: var(--font-title);
-  font-size: 2.1rem;
-  line-height: 1.1;
-  background: linear-gradient(135deg, #a8ff5a 0%, #ffe94d 50%, #ff9f43 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 2px 8px rgba(168,255,90,0.4));
-}
+/* ── Battlefield ── */
+#battlefield{flex:1;position:relative;overflow:hidden;}
+/* Rich layered sky */
+.sky-layer{position:absolute;inset:0;
+  background:linear-gradient(to bottom,
+    #03060f 0%,#060f20 20%,#0a1830 35%,
+    #122010 55%,#0d1a08 70%,#060e04 100%);}
+/* Moon */
+.moon{position:absolute;top:8%;left:72%;width:28px;height:28px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#fffbe0,#e8d080);
+  box-shadow:0 0 20px rgba(255,240,160,.4),0 0 60px rgba(255,240,160,.1);}
+/* Ground sides */
+.ground-l,.ground-r{position:absolute;top:0;bottom:0;width:30%;background:linear-gradient(to right,rgba(13,28,8,.95),transparent);}
+.ground-r{right:0;background:linear-gradient(to left,rgba(13,28,8,.95),transparent);}
+/* Central path (vertical) */
+.v-path{position:absolute;left:50%;transform:translateX(-50%);top:0;bottom:0;width:25%;
+  background:linear-gradient(to bottom,#3a2e1e,#5a4a35,#4a3a25,#3a2e1e);
+  border-left:1px solid rgba(255,255,255,.05);border-right:1px solid rgba(0,0,0,.4);}
+.v-path-stones{position:absolute;left:50%;transform:translateX(-50%);top:0;bottom:0;width:4px;
+  background:repeating-linear-gradient(to bottom,rgba(255,255,255,.07) 0,rgba(255,255,255,.07) 12px,transparent 12px,transparent 24px);}
+/* Trees decoration */
+.tree{position:absolute;font-size:1.4rem;opacity:.7;filter:drop-shadow(0 2px 4px rgba(0,0,0,.8));animation:treeSway var(--d,4s) ease-in-out infinite alternate;}
+@keyframes treeSway{0%{transform:rotate(-1.5deg);}100%{transform:rotate(1.5deg);}}
 
-.game-tagline {
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
-  margin-bottom: 28px;
-}
+/* Stars */
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle var(--d,2s) ease-in-out infinite;}
+@keyframes twinkle{0%,100%{opacity:var(--a,.25);}50%{opacity:.9;}}
 
-/* Mushroom cards */
-.shroom-showcase {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 28px;
-  width: 100%;
-  max-width: 340px;
-}
+/* ── Units ── */
+#unitsLayer{position:absolute;inset:0;pointer-events:none;}
+.unit{position:absolute;display:flex;flex-direction:column;align-items:center;z-index:8;transform:translateX(-50%);}
+.unit-badge{
+  background:rgba(5,8,18,.8);border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;padding:1px 5px;
+  display:flex;flex-direction:column;align-items:center;gap:1px;margin-bottom:1px;}
+.unit-name{font-family:var(--font-h);font-size:.3rem;color:rgba(255,255,255,.55);letter-spacing:.3px;white-space:nowrap;}
+.unit-emoji-el{font-size:1.4rem;line-height:1;filter:drop-shadow(0 2px 6px rgba(0,0,0,.9));}
+.unit-hpbar-wrap{width:26px;height:3px;background:rgba(0,0,0,.6);border-radius:3px;overflow:hidden;margin-top:1px;border:1px solid rgba(255,255,255,.07);}
+.unit-hpbar{height:100%;border-radius:3px;transition:width .15s;}
+.is-player .unit-hpbar{background:linear-gradient(90deg,#1a8a3a,#2ecc71);}
+.is-enemy  .unit-hpbar{background:linear-gradient(90deg,#8a1a1a,#e74c3c);}
+.unit.is-enemy .unit-badge{border-color:rgba(192,57,43,.3);}
+.unit.is-player .unit-badge{border-color:rgba(39,174,96,.3);}
 
-.shroom-card {
-  flex: 1;
-  background: rgba(255,255,255,0.05);
-  border: 1.5px solid rgba(255,255,255,0.1);
-  border-radius: 16px;
-  padding: 12px 6px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
+/* Attack */
+.unit-emoji-el.atk{animation:atkPop .18s ease;}
+@keyframes atkPop{0%,100%{transform:scale(1);}50%{transform:scale(1.45);filter:brightness(1.7) drop-shadow(0 0 10px gold);}}
+/* Hit FX */
+.hit-fx{position:absolute;font-size:1.1rem;z-index:15;animation:hitUp .55s ease forwards;pointer-events:none;}
+@keyframes hitUp{0%{opacity:1;transform:translateY(0) scale(.6);}100%{opacity:0;transform:translateY(-32px) scale(1.1);}}
+/* Spawn ring */
+.spawn-ring{position:absolute;border-radius:50%;border:2px solid rgba(240,192,64,.7);animation:spawnExpand .4s ease forwards;pointer-events:none;z-index:7;}
+@keyframes spawnExpand{0%{width:10px;height:10px;opacity:1;}100%{width:50px;height:50px;opacity:0;}}
 
-.shroom-emoji { font-size: 1.8rem; }
+/* ── Player castle bottom ── */
+#playerCastleZone{
+  flex:0 0 auto;display:flex;flex-direction:column;align-items:center;
+  padding:4px 0 2px;
+  background:linear-gradient(to top,rgba(5,8,18,.95),transparent);
+  position:relative;z-index:20;}
 
-.shroom-name {
-  font-family: var(--font-title);
-  font-size: 0.7rem;
-  color: #fff;
-  letter-spacing: 0.5px;
-}
+/* ── Elixir ── */
+#elixirZone{
+  flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:5px 12px 4px;
+  background:rgba(5,8,18,.9);
+  border-top:1px solid rgba(240,192,64,.08);}
+.elixir-label{font-family:var(--font-h);font-size:.58rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);}
+/* HORIZONTAL elixir bar */
+#elixirBarH{
+  display:flex;flex-direction:row;align-items:center;gap:3px;flex:1;
+  background:rgba(0,0,0,.4);border:1px solid rgba(240,192,64,.15);border-radius:20px;
+  padding:3px 5px;max-width:220px;}
+.edot{
+  flex:1;height:10px;border-radius:10px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
+  transition:background .22s,box-shadow .22s;}
+.edot.filled{
+  background:linear-gradient(90deg,var(--gold2),var(--gold));
+  border-color:var(--gold);
+  box-shadow:0 0 6px rgba(240,192,64,.55);}
+.elixir-num{font-family:var(--font-h);font-size:.72rem;color:var(--gold);font-weight:700;min-width:18px;text-align:right;}
 
-.shroom-desc {
-  font-size: 0.6rem;
-  color: rgba(255,255,255,0.45);
-  text-align: center;
-  line-height: 1.3;
-}
+/* ── Card Hand ── */
+#cardHand{
+  flex:0 0 auto;display:flex;gap:6px;justify-content:center;align-items:flex-end;
+  padding:5px 8px 12px;
+  background:linear-gradient(to top,rgba(3,5,12,.99) 75%,transparent);}
 
-.btn-play {
-  background: linear-gradient(135deg, #7fff4f, #39d400);
-  border: none;
-  border-radius: 50px;
-  padding: 18px 52px;
-  font-family: var(--font-title);
-  font-size: 1.3rem;
-  color: #0a2200;
-  box-shadow: 0 6px 30px rgba(127,255,79,0.4), 0 2px 0 rgba(0,0,0,0.3);
-  cursor: pointer;
-  transition: transform 0.12s, box-shadow 0.12s;
-  letter-spacing: 1px;
-}
-.btn-play:active { transform: scale(0.93) translateY(2px); box-shadow: 0 2px 12px rgba(127,255,79,0.3); }
+.card{
+  width:60px;
+  background:var(--card-bg);
+  border:2px solid var(--card-border);
+  border-radius:10px;padding:7px 3px 5px;
+  display:flex;flex-direction:column;align-items:center;gap:1px;
+  cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .2s;
+  position:relative;overflow:hidden;touch-action:none;}
+/* card shine */
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:40%;background:linear-gradient(to bottom,rgba(255,255,255,.08),transparent);pointer-events:none;border-radius:8px 8px 0 0;}
+.card-rarity-bar{position:absolute;top:0;left:0;right:0;height:2.5px;border-radius:10px 10px 0 0;}
+.card-rarity-bar.common{background:rgba(180,180,180,.6);}
+.card-rarity-bar.rare{background:linear-gradient(90deg,#4090f0,#80c8ff);}
+.card-rarity-bar.epic{background:linear-gradient(90deg,#a040f0,#c878ff);}
+.card-rarity-bar.legend{background:linear-gradient(90deg,var(--gold),#ff9f43,var(--gold));animation:legendShine 2s linear infinite;}
+@keyframes legendShine{0%{background-position:0%;}100%{background-position:200%;}}
+.card:active,.card.lift{transform:translateY(-16px) scale(1.1);border-color:var(--gold);box-shadow:0 12px 32px rgba(240,192,64,.45),0 0 0 1px rgba(240,192,64,.3);}
+.card.cant{opacity:.35;filter:grayscale(.7);}
+.card-cost-badge{
+  position:absolute;bottom:4px;right:4px;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  border-radius:50%;width:16px;height:16px;
+  font-family:var(--font-h);font-size:.52rem;
+  display:flex;align-items:center;justify-content:center;
+  color:#1a0800;font-weight:700;
+  box-shadow:0 1px 5px rgba(0,0,0,.6);}
+.card-emoji{font-size:1.65rem;line-height:1;margin-top:3px;}
+.card-name{font-family:var(--font-h);font-size:.44rem;color:#e8d8a0;letter-spacing:.2px;text-align:center;line-height:1.2;}
+.card-power{font-size:.38rem;color:rgba(255,255,255,.38);font-family:var(--font-h);}
 
-/* ── HUD ── */
-#hud {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  padding: 10px 14px 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  z-index: 30;
-  background: linear-gradient(to bottom, rgba(10,22,10,0.9), transparent);
-  pointer-events: none;
-}
+/* Next card indicator */
+.next-card-hint{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  opacity:.55;padding:0 3px;}
+.next-label{font-family:var(--font-h);font-size:.38rem;letter-spacing:1px;color:rgba(255,255,255,.4);text-transform:uppercase;}
+.next-emoji{font-size:1.1rem;filter:grayscale(.5);}
 
-.hud-side {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
+/* ═══════════════════════════════════
+   TOAST
+═══════════════════════════════════ */
+#toastWrap{position:fixed;top:44%;left:50%;transform:translate(-50%,-50%);z-index:90;pointer-events:none;}
+.toast{
+  font-family:var(--font-h);font-size:1rem;
+  padding:10px 20px;border-radius:4px;
+  animation:tpop 1.1s ease forwards;white-space:nowrap;
+  background:rgba(5,8,18,.97);
+  border:1.5px solid rgba(240,192,64,.35);
+  color:#f0d880;
+  box-shadow:0 4px 20px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06);}
+@keyframes tpop{0%{transform:scale(.3) translateY(10px);opacity:0;}35%{transform:scale(1.06);opacity:1;}75%{opacity:1;}100%{opacity:0;}}
 
-.territory-bar-wrap {
-  flex: 1;
-  margin: 0 10px;
-  height: 10px;
-  background: rgba(0,0,0,0.4);
-  border-radius: 10px;
-  overflow: hidden;
-  border: 1.5px solid rgba(255,255,255,0.1);
-  position: relative;
-}
-
-.territory-bar-player {
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  background: linear-gradient(90deg, #7fff4f, #a8ff70);
-  border-radius: 10px 0 0 10px;
-  transition: width 0.4s ease;
-  box-shadow: 2px 0 8px rgba(127,255,79,0.5);
-}
-
-.territory-bar-enemy {
-  position: absolute;
-  right: 0; top: 0; bottom: 0;
-  background: linear-gradient(90deg, #e74c3c, #c0392b);
-  border-radius: 0 10px 10px 0;
-  transition: width 0.4s ease;
-  box-shadow: -2px 0 8px rgba(192,57,43,0.5);
-}
-
-.hud-icon { font-size: 1.2rem; }
-
-.hud-score {
-  font-family: var(--font-title);
-  font-size: 0.9rem;
-  color: #7fff4f;
-}
-
-.hud-enemy-score {
-  font-family: var(--font-title);
-  font-size: 0.9rem;
-  color: #e74c3c;
-}
-
-/* Turn indicator */
-#turnBar {
-  position: fixed;
-  top: 42px; left: 0; right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  z-index: 30;
-  pointer-events: none;
-  padding: 4px 0;
-}
-
-.turn-badge {
-  font-family: var(--font-title);
-  font-size: 0.75rem;
-  padding: 5px 16px;
-  border-radius: 50px;
-  letter-spacing: 1px;
-  transition: all 0.3s;
-}
-
-.turn-badge.player-turn {
-  background: rgba(127,255,79,0.2);
-  border: 1.5px solid rgba(127,255,79,0.5);
-  color: #7fff4f;
-  box-shadow: 0 0 12px rgba(127,255,79,0.3);
-}
-
-.turn-badge.enemy-turn {
-  background: rgba(192,57,43,0.2);
-  border: 1.5px solid rgba(192,57,43,0.5);
-  color: #e74c3c;
-  box-shadow: 0 0 12px rgba(192,57,43,0.3);
-}
-
-/* ── GAME CANVAS AREA ── */
-#gameArea {
-  position: fixed;
-  inset: 0;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-#hexGrid {
-  position: relative;
-  touch-action: none;
-}
-
-/* ── BOTTOM PANEL ── */
-#bottomPanel {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  z-index: 30;
-  background: linear-gradient(to top, rgba(5,12,5,0.97) 60%, transparent);
-  padding: 10px 12px 16px;
-}
-
-.mushroom-selector {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin-bottom: 6px;
-}
-
-.shroom-btn {
-  width: 68px;
-  background: rgba(255,255,255,0.06);
-  border: 2px solid rgba(255,255,255,0.12);
-  border-radius: 16px;
-  padding: 8px 4px 6px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  cursor: pointer;
-  transition: all 0.15s;
-  position: relative;
-}
-
-.shroom-btn:active { transform: scale(0.93); }
-
-.shroom-btn.selected {
-  border-color: rgba(127,255,79,0.7);
-  background: rgba(127,255,79,0.1);
-  box-shadow: 0 0 16px rgba(127,255,79,0.25);
-}
-
-.shroom-btn.locked {
-  opacity: 0.35;
-  filter: grayscale(1);
-}
-
-.shroom-btn-emoji { font-size: 1.6rem; line-height: 1; }
-
-.shroom-btn-name {
-  font-family: var(--font-title);
-  font-size: 0.55rem;
-  color: rgba(255,255,255,0.7);
-  letter-spacing: 0.5px;
-  text-align: center;
-}
-
-.shroom-btn-cost {
-  font-size: 0.55rem;
-  font-weight: 800;
-  color: #ffe94d;
-}
-
-.shroom-btn .lock-icon {
-  position: absolute;
-  top: 4px; right: 4px;
-  font-size: 0.6rem;
-  opacity: 0.6;
-}
-
-/* Spores counter */
-.spores-bar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  margin-bottom: 4px;
-}
-
-.spores-label {
-  font-family: var(--font-title);
-  font-size: 0.7rem;
-  color: rgba(255,255,255,0.5);
-}
-
-.spores-dots {
-  display: flex;
-  gap: 4px;
-}
-
-.spore-dot {
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.15);
-  border: 1.5px solid rgba(255,255,255,0.2);
-  transition: all 0.2s;
-}
-
-.spore-dot.filled {
-  background: #ffe94d;
-  border-color: #ffd700;
-  box-shadow: 0 0 6px rgba(255,233,77,0.6);
-}
-
-/* End turn button */
-.btn-end-turn {
-  width: 100%;
-  max-width: 280px;
-  display: block;
-  margin: 0 auto;
-  background: linear-gradient(135deg, rgba(127,255,79,0.2), rgba(127,255,79,0.08));
-  border: 2px solid rgba(127,255,79,0.4);
-  border-radius: 50px;
-  padding: 11px;
-  font-family: var(--font-title);
-  font-size: 0.9rem;
-  color: #7fff4f;
-  letter-spacing: 1px;
-  cursor: pointer;
-  transition: all 0.15s;
-  box-shadow: 0 0 12px rgba(127,255,79,0.1);
-}
-
-.btn-end-turn:active { transform: scale(0.96); }
-
-/* ── TOAST / POPUP ── */
-#toastWrap {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 60;
-  pointer-events: none;
-}
-
-.toast {
-  font-family: var(--font-title);
-  font-size: 1.8rem;
-  text-align: center;
-  padding: 16px 32px;
-  border-radius: 20px;
-  animation: toastPop 0.8s ease forwards;
-  white-space: nowrap;
-}
-
-@keyframes toastPop {
-  0%   { transform: scale(0.3); opacity: 0; }
-  50%  { transform: scale(1.1); opacity: 1; }
-  70%  { transform: scale(0.96); opacity: 1; }
-  100% { transform: scale(1); opacity: 0; }
-}
-
-/* ── RESULT SCREEN ── */
-#resultScreen {
-  background: rgba(5,12,5,0.97);
-  backdrop-filter: blur(20px);
-}
-
-.result-emoji { font-size: 4rem; margin-bottom: 10px; animation: resultBounce 0.6s cubic-bezier(0.34,1.56,0.64,1); }
-@keyframes resultBounce { 0%{ transform:scale(0); } 100%{ transform:scale(1); } }
-
-.result-title {
-  font-family: var(--font-title);
-  font-size: 2.4rem;
-  margin-bottom: 6px;
-}
-
-.result-title.win  { color: #7fff4f; text-shadow: 0 0 20px rgba(127,255,79,0.5); }
-.result-title.lose { color: #e74c3c; text-shadow: 0 0 20px rgba(231,76,60,0.5); }
-
-.result-sub {
-  font-size: 0.9rem;
-  color: rgba(255,255,255,0.4);
-  margin-bottom: 28px;
-  letter-spacing: 1px;
-}
-
-.result-stats {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 30px;
-  width: 100%;
-  max-width: 280px;
-}
-
-.result-stat {
-  flex: 1;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 14px;
-  padding: 12px 8px;
-}
-
-.result-stat-val {
-  font-family: var(--font-title);
-  font-size: 1.5rem;
-  color: #ffe94d;
-  display: block;
-}
-
-.result-stat-lbl {
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.3);
-  display: block;
-  margin-top: 2px;
-}
-
-.btn-retry {
-  background: linear-gradient(135deg, #7fff4f, #39d400);
-  border: none;
-  border-radius: 50px;
-  padding: 16px 48px;
-  font-family: var(--font-title);
-  font-size: 1.1rem;
-  color: #0a2200;
-  box-shadow: 0 4px 20px rgba(127,255,79,0.35);
-  cursor: pointer;
-  transition: transform 0.12s;
-}
-.btn-retry:active { transform: scale(0.94); }
-
-/* ── INFO PANEL ── */
-#infoPanel {
-  position: fixed;
-  bottom: 180px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 35;
-  pointer-events: none;
-  text-align: center;
-  transition: opacity 0.3s;
-}
-
-.info-text {
-  font-family: var(--font-title);
-  font-size: 0.75rem;
-  color: rgba(255,255,255,0.5);
-  background: rgba(0,0,0,0.5);
-  padding: 5px 14px;
-  border-radius: 50px;
-  letter-spacing: 0.5px;
-}
-
-/* Wave counter */
-#waveCounter {
-  position: fixed;
-  top: 42px;
-  right: 14px;
-  font-family: var(--font-title);
-  font-size: 0.65rem;
-  color: rgba(255,255,255,0.35);
-  z-index: 30;
-  pointer-events: none;
-}
+/* ═══════════════════════════════════
+   RESULT
+═══════════════════════════════════ */
+#resultScreen{
+  background:rgba(3,5,10,.97);
+  backdrop-filter:blur(24px);}
+.res-decor{font-size:3.5rem;margin-bottom:6px;animation:resPop .7s cubic-bezier(.34,1.56,.64,1);}
+@keyframes resPop{0%{transform:scale(0)rotate(-15deg);}100%{transform:scale(1)rotate(0);}}
+.res-title{font-family:var(--font-t);font-size:1.7rem;margin-bottom:3px;letter-spacing:1px;}
+.res-title.win{
+  background:linear-gradient(135deg,#fff8e0,var(--gold),#c8780a);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.res-title.lose{color:#e74c3c;text-shadow:0 0 16px rgba(231,76,60,.4);}
+.res-sub{font-size:.82rem;color:rgba(255,255,255,.32);margin-bottom:20px;font-style:italic;}
+.res-stats{display:flex;gap:8px;margin-bottom:22px;width:100%;max-width:280px;}
+.rstat{flex:1;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 6px;}
+.rstat-v{font-family:var(--font-h);font-size:1.4rem;color:var(--gold);}
+.rstat-l{font-size:.5rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.25);font-family:var(--font-h);}
+.res-btns{display:flex;flex-direction:column;gap:8px;width:100%;max-width:280px;}
+.btn-res{border:none;border-radius:3px;padding:13px;font-family:var(--font-h);font-size:.85rem;letter-spacing:1.5px;cursor:pointer;transition:transform .12s;}
+.btn-res:active{transform:scale(.95);}
+.btn-res.primary{background:linear-gradient(135deg,#f0c040,#c8880a,#7a4a00);color:#1a0800;box-shadow:0 3px 0 #3a2000,0 5px 18px rgba(240,192,64,.3);}
+.btn-res.secondary{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);}
 </style>
 </head>
 <body>
 
-<canvas id="bg-canvas"></canvas>
-
-<!-- START SCREEN -->
+<!-- ═══ START ═══ -->
 <div class="screen" id="startScreen">
-  <div class="title-wrap">
-    <span class="title-emoji">🍄</span>
-    <div class="game-title">Royaume des<br>Champignons</div>
-  </div>
-  <div class="game-tagline">Conquête de territoire</div>
-
-  <div class="shroom-showcase">
-    <div class="shroom-card">
-      <span class="shroom-emoji">🌿</span>
-      <div class="shroom-name">Herbe</div>
-      <div class="shroom-desc">Colonise les cases voisines</div>
-    </div>
-    <div class="shroom-card">
-      <span class="shroom-emoji">🍄</span>
-      <div class="shroom-name">Champignon</div>
-      <div class="shroom-desc">Bloque l'ennemi 2 tours</div>
-    </div>
-    <div class="shroom-card">
-      <span class="shroom-emoji">💜</span>
-      <div class="shroom-name">Poison</div>
-      <div class="shroom-desc">Ronge le territoire adverse</div>
-    </div>
-    <div class="shroom-card">
-      <span class="shroom-emoji">⚡</span>
-      <div class="shroom-name">Foudre</div>
-      <div class="shroom-desc">Détruit une zone ennemie</div>
+  <div class="torch torch-l"></div>
+  <div class="torch torch-r"></div>
+  <div class="start-crest">🏰</div>
+  <div class="start-title">Château &<br>Chevaliers</div>
+  <div class="start-tagline">Conquête médiévale</div>
+  <div class="start-banner">
+    <div class="start-preview">
+      <div class="sprev"><span class="sprev-e">⚔️</span><span class="sprev-n">Chevalier</span></div>
+      <div class="sprev"><span class="sprev-e">🐉</span><span class="sprev-n">Dragon</span></div>
+      <div class="sprev"><span class="sprev-e">🧙</span><span class="sprev-n">Mage</span></div>
+      <div class="sprev"><span class="sprev-e">🗼</span><span class="sprev-n">Tour</span></div>
+      <div class="sprev"><span class="sprev-e">💣</span><span class="sprev-n">Bombarde</span></div>
     </div>
   </div>
-
-  <button class="btn-play" id="startBtn">🌱 JOUER !</button>
+  <button class="btn-start" id="btnGoToDeck">⚔️ &nbsp;CONSTRUIRE SON DECK</button>
 </div>
 
-<!-- HUD -->
-<div id="hud">
-  <div class="hud-side">
-    <span class="hud-icon">🟢</span>
-    <span class="hud-score" id="hudPlayer">0</span>
+<!-- ═══ DECK BUILDER ═══ -->
+<div class="screen hidden" id="deckScreen">
+  <div class="deck-header">
+    <div class="deck-title">🃏 Construction du Deck</div>
+    <div class="deck-sub">Choisis 8 cartes pour le combat</div>
   </div>
-  <div class="territory-bar-wrap">
-    <div class="territory-bar-player" id="barPlayer" style="width:50%"></div>
-    <div class="territory-bar-enemy"  id="barEnemy"  style="width:50%"></div>
+  <div class="deck-slots-wrap">
+    <div class="deck-slots-label">Ton deck</div>
+    <div class="deck-slots" id="deckSlots"></div>
   </div>
-  <div class="hud-side">
-    <span class="hud-enemy-score" id="hudEnemy">0</span>
-    <span class="hud-icon">🔴</span>
+  <div class="deck-progress">Cartes sélectionnées : <span id="deckCountVal">0</span> / 8</div>
+  <div class="all-cards-label">Toutes les cartes</div>
+  <div class="all-cards-grid" id="allCardsGrid"></div>
+  <button class="btn-play-deck" id="btnPlayDeck" disabled>⚔️ &nbsp;AU COMBAT !</button>
+</div>
+
+<!-- ═══ GAME ═══ -->
+<div id="gameWrap" style="display:none;flex-direction:column;">
+
+  <!-- Enemy castle -->
+  <div id="enemyCastleZone">
+    <div class="castle-block">
+      <div class="castle-name-tag">Château Ennemi</div>
+      <div class="castle-icon">🏯</div>
+      <div class="castle-hp-pill enemy">
+        <span class="hp-heart">❤️</span>
+        <span id="enemyHpNum">30</span>
+        <div class="hp-bar-h"><div class="hp-bar-fill enemy" id="enemyHpFill" style="width:100%"></div></div>
+      </div>
+    </div>
   </div>
-</div>
 
-<div id="turnBar">
-  <div class="turn-badge player-turn" id="turnBadge">🌿 TON TOUR</div>
-</div>
-
-<div id="waveCounter" id="waveCounter"></div>
-
-<!-- GAME AREA -->
-<div id="gameArea">
-  <canvas id="hexGrid"></canvas>
-</div>
-
-<!-- BOTTOM PANEL -->
-<div id="bottomPanel">
-  <div class="spores-bar">
-    <span class="spores-label">🌟 Spores :</span>
-    <div class="spores-dots" id="sporesDots"></div>
+  <!-- Battlefield -->
+  <div id="battlefield">
+    <div class="sky-layer" id="bgSky"></div>
+    <div class="moon"></div>
+    <div class="ground-l"></div>
+    <div class="ground-r"></div>
+    <div class="v-path"><div class="v-path-stones"></div></div>
+    <div id="unitsLayer"></div>
   </div>
-  <div class="mushroom-selector" id="mushroomSelector"></div>
-  <button class="btn-end-turn" id="endTurnBtn">Fin du tour ➤</button>
-</div>
 
-<div id="infoPanel"><div class="info-text" id="infoText">Tape sur une case verte pour poser un champignon !</div></div>
+  <!-- Player castle -->
+  <div id="playerCastleZone">
+    <div class="castle-block">
+      <div class="castle-hp-pill player">
+        <span class="hp-heart">❤️</span>
+        <span id="playerHpNum">30</span>
+        <div class="hp-bar-h"><div class="hp-bar-fill player" id="playerHpFill" style="width:100%"></div></div>
+      </div>
+      <div class="castle-icon">🏰</div>
+      <div class="castle-name-tag">Ton Château</div>
+    </div>
+  </div>
+
+  <!-- Elixir — horizontal, above cards -->
+  <div id="elixirZone">
+    <span class="elixir-label">⚡ Élixir</span>
+    <div id="elixirBarH"></div>
+    <span class="elixir-num" id="elixirNum">4</span>
+  </div>
+
+  <!-- Card hand -->
+  <div id="cardHand"></div>
+</div>
 
 <div id="toastWrap"></div>
 
-<!-- RESULT SCREEN -->
+<!-- ═══ RESULT ═══ -->
 <div class="screen hidden" id="resultScreen">
-  <div class="result-emoji" id="resultEmoji">🏆</div>
-  <div class="result-title" id="resultTitle">Victoire !</div>
-  <div class="result-sub" id="resultSub">Tu as conquis le royaume !</div>
-  <div class="result-stats">
-    <div class="result-stat">
-      <span class="result-stat-val" id="resTurns">0</span>
-      <span class="result-stat-lbl">Tours</span>
-    </div>
-    <div class="result-stat">
-      <span class="result-stat-val" id="resPlayer">0</span>
-      <span class="result-stat-lbl">Tes cases</span>
-    </div>
-    <div class="result-stat">
-      <span class="result-stat-val" id="resEnemy">0</span>
-      <span class="result-stat-lbl">Cases ennemies</span>
-    </div>
+  <div class="res-decor" id="resDecor">🏆</div>
+  <div class="res-title" id="resTitle">Victoire !</div>
+  <div class="res-sub"   id="resSub">Le château ennemi est tombé !</div>
+  <div class="res-stats">
+    <div class="rstat"><div class="rstat-v" id="resTime">0</div><div class="rstat-l">Secondes</div></div>
+    <div class="rstat"><div class="rstat-v" id="resUnits">0</div><div class="rstat-l">Unités</div></div>
+    <div class="rstat"><div class="rstat-v" id="resEhp">0</div><div class="rstat-l">PV ennemi</div></div>
   </div>
-  <button class="btn-retry" id="retryBtn">🔄 Rejouer</button>
+  <div class="res-btns">
+    <button class="btn-res primary" id="btnRetry">🔄 &nbsp;Rejouer même deck</button>
+    <button class="btn-res secondary" id="btnNewDeck">🃏 &nbsp;Changer de deck</button>
+  </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-//  ROYAUME DES CHAMPIGNONS
-//  Hex grid territory conquest for kids 8+
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════
+//  CHÂTEAU & CHEVALIERS  v3
+// ════════════════════════════════════════════════════
 
-// ── Background animated spores ──────────────────────────
-const bgCanvas = document.getElementById('bg-canvas');
-const bgCtx = bgCanvas.getContext('2d');
-let bgSpores = [];
-
-function initBg() {
-  bgCanvas.width  = window.innerWidth;
-  bgCanvas.height = window.innerHeight;
-  bgSpores = [];
-  for (let i = 0; i < 40; i++) {
-    bgSpores.push({
-      x: Math.random() * bgCanvas.width,
-      y: Math.random() * bgCanvas.height,
-      r: Math.random() * 3 + 1,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: -Math.random() * 0.5 - 0.2,
-      alpha: Math.random() * 0.4 + 0.1,
-      color: ['#7fff4f','#ffe94d','#ff9f43','#c46fff'][Math.floor(Math.random()*4)],
-    });
-  }
-}
-
-function animBg() {
-  bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
-  for (const s of bgSpores) {
-    s.x += s.vx; s.y += s.vy;
-    if (s.y < -10) { s.y = bgCanvas.height + 10; s.x = Math.random() * bgCanvas.width; }
-    bgCtx.beginPath();
-    bgCtx.arc(s.x, s.y, s.r, 0, Math.PI*2);
-    bgCtx.fillStyle = s.color;
-    bgCtx.globalAlpha = s.alpha;
-    bgCtx.fill();
-    bgCtx.globalAlpha = 1;
-  }
-  requestAnimationFrame(animBg);
-}
-
-initBg();
-animBg();
-window.addEventListener('resize', initBg);
-
-// ── HEX GRID ────────────────────────────────────────────
-const hexCanvas = document.getElementById('hexGrid');
-const hCtx = hexCanvas.getContext('2d');
-
-// Grid config — adapts to screen
-const GRID_ROWS = 9;
-const GRID_COLS = 7;
-
-let HEX_SIZE = 34; // will be recalculated
-
-// Cell states
-const EMPTY   = 0;
-const PLAYER  = 1;
-const ENEMY   = 2;
-const BLOCKED = 3; // mushroom blocker
-
-// Mushroom types
-const SHROOMS = [
-  { id:'grass',   emoji:'🌿', name:'Herbe',     cost:1, desc:'Colonise 1 case adjacente libre', color:'#7fff4f', unlocked:true  },
-  { id:'shroom',  emoji:'🍄', name:'Champignon',cost:2, desc:'Bloque les cases ennemies proches', color:'#ff7f50', unlocked:true  },
-  { id:'poison',  emoji:'💜', name:'Poison',    cost:3, desc:'Ronge 2 cases ennemies adjacentes', color:'#c46fff', unlocked:false },
-  { id:'thunder', emoji:'⚡', name:'Foudre',    cost:4, desc:'Détruit 3 cases ennemies éloignées', color:'#ffe94d', unlocked:false },
+// ── 20 PLAYER CARDS ────────────────────────────────
+const ALL_CARDS = [
+  // COMMON
+  {id:'knight',  emoji:'⚔️', name:'Chevalier', hp:6,  dmg:2, spd:.55, range:44, cost:3, tower:false, rarity:'common', desc:'Solide et fiable'},
+  {id:'archer',  emoji:'🏹', name:'Archer',    hp:3,  dmg:1, spd:.7,  range:85, cost:2, tower:false, rarity:'common', desc:'Rapide, à distance'},
+  {id:'spear',   emoji:'🗡️',name:'Lancier',   hp:4,  dmg:2, spd:.6,  range:50, cost:2, tower:false, rarity:'common', desc:'Perce les armures'},
+  {id:'wolf',    emoji:'🐺', name:'Loup',      hp:4,  dmg:2, spd:1.0, range:38, cost:2, tower:false, rarity:'common', desc:'Très rapide'},
+  {id:'bat',     emoji:'🦇', name:'Chauve-souris',hp:2,dmg:1,spd:1.2,range:50, cost:1, tower:false, rarity:'common', desc:'Swarm rapide'},
+  // RARE
+  {id:'paladin', emoji:'🛡️',name:'Paladin',   hp:12, dmg:2, spd:.4,  range:44, cost:4, tower:false, rarity:'rare', desc:'Tank résistant'},
+  {id:'cavalry', emoji:'🐎', name:'Cavalier',  hp:7,  dmg:3, spd:.85, range:44, cost:4, tower:false, rarity:'rare', desc:'Charge rapide'},
+  {id:'eagle',   emoji:'🦅', name:'Aigle Royal',hp:5, dmg:3, spd:1.2, range:65, cost:3, tower:false, rarity:'rare', desc:'Vole au-dessus'},
+  {id:'tower',   emoji:'🗼', name:'Tour',      hp:14, dmg:2, spd:0,   range:115,cost:4, tower:true,  rarity:'rare', desc:'Défense fixe'},
+  {id:'bomb',    emoji:'💣', name:'Bombarde',  hp:2,  dmg:8, spd:.25, range:38, cost:3, tower:false, rarity:'rare', desc:'Explose à l\'impact'},
+  {id:'healer',  emoji:'💊', name:'Guérisseur',hp:4,  dmg:1, spd:.5,  range:55, cost:3, tower:false, rarity:'rare', desc:'Soigne les alliés'},
+  {id:'ballista',emoji:'🎯', name:'Baliste',   hp:8,  dmg:5, spd:0,   range:160,cost:5, tower:true,  rarity:'rare', desc:'Longue portée'},
+  // EPIC
+  {id:'giant',   emoji:'👹', name:'Géant',     hp:18, dmg:3, spd:.28, range:44, cost:5, tower:false, rarity:'epic', desc:'Énorme et lent'},
+  {id:'wizard',  emoji:'🧙', name:'Mage',      hp:5,  dmg:5, spd:.38, range:95, cost:5, tower:false, rarity:'epic', desc:'Magie dévastatrice'},
+  {id:'golem',   emoji:'🗿', name:'Golem',     hp:25, dmg:2, spd:.2,  range:44, cost:6, tower:false, rarity:'epic', desc:'Invincible !'},
+  {id:'gryphon', emoji:'🦁', name:'Griffon',   hp:9,  dmg:4, spd:.75, range:60, cost:5, tower:false, rarity:'epic', desc:'Vole et attaque fort'},
+  {id:'cannon',  emoji:'💥', name:'Canon Royal',hp:6, dmg:6, spd:0,   range:130,cost:5, tower:true,  rarity:'epic', desc:'Frappe de loin'},
+  // LEGENDARY
+  {id:'dragon',  emoji:'🐉', name:'Dragon',    hp:10, dmg:5, spd:.5,  range:75, cost:6, tower:false, rarity:'legend', desc:'Le plus puissant !'},
+  {id:'phoenix', emoji:'🦜', name:'Phénix',    hp:7,  dmg:4, spd:.9,  range:70, cost:6, tower:false, rarity:'legend', desc:'Renaît de ses cendres'},
+  {id:'lich',    emoji:'💀', name:'Liche',     hp:8,  dmg:6, spd:.35, range:100,cost:7, tower:false, rarity:'legend', desc:'Magie de mort'},
 ];
 
-// Game state
-let grid = [];      // array of cell objects
-let selectedShroom = 0;
-let playerSpores = 3;
-let maxSpores = 5;
-let turn = 'player'; // 'player' | 'enemy'
-let turnCount = 1;
-let gameOver = false;
-let playerTerr = 0, enemyTerr = 0;
-let animating = false;
+// ── ENEMY UNITS ─────────────────────────────────────
+const ENEMY_POOL = [
+  {id:'goblin',   emoji:'👺', name:'Gobelin',      hp:2,  dmg:1, spd:.95, range:35, cost:1},
+  {id:'skeleton', emoji:'💀', name:'Squelette',    hp:2,  dmg:1, spd:.7,  range:35, cost:1},
+  {id:'bat2',     emoji:'🦇', name:'Chauve-souris',hp:2,  dmg:1, spd:1.1, range:50, cost:1},
+  {id:'troll',    emoji:'🧌', name:'Troll',        hp:10, dmg:2, spd:.32, range:44, cost:3},
+  {id:'witch',    emoji:'🧙‍♀️',name:'Sorcière',   hp:5,  dmg:3, spd:.38, range:88, cost:3},
+  {id:'orc',      emoji:'👾', name:'Orc',          hp:8,  dmg:3, spd:.45, range:44, cost:3},
+  {id:'ogre',     emoji:'🦍', name:'Ogre',         hp:20, dmg:4, spd:.22, range:44, cost:5},
+  {id:'darkwiz',  emoji:'🧙',  name:'Mage Noir',   hp:6,  dmg:5, spd:.35, range:90, cost:5},
+  {id:'demon',    emoji:'😈', name:'Démon',        hp:12, dmg:5, spd:.5,  range:60, cost:6},
+];
 
-// Cell object
-function makeCell(row, col, owner=EMPTY) {
-  return { row, col, owner, blocked:0, poison:0, shroom: null,
-           pulse:0, glow:0, shake:0, newlyPlaced:0 };
-}
+// ── STATE ──────────────────────────────────────────
+let playerDeck = [];
+const MAX_HP   = 30;
+let playerHp, enemyHp, elixir, maxElixir;
+let units, unitsSent, gameOver, startTime;
+let frameId, elixirItv, enemyTmo;
+let cardHand = [], deckCursor = 0, uid = 0;
 
-// Hex geometry helpers
-function hexToPixel(row, col) {
-  const x = HEX_SIZE * (Math.sqrt(3) * col + (row % 2) * Math.sqrt(3)/2);
-  const y = HEX_SIZE * (3/2 * row);
-  return { x, y };
-}
+// ── DOM ─────────────────────────────────────────────
+const battlefield = document.getElementById('battlefield');
+const unitsLayer  = document.getElementById('unitsLayer');
+const cardHandEl  = document.getElementById('cardHand');
 
-function pixelToHex(px, py) {
-  // Approximate nearest hex
-  let best = null, bestDist = Infinity;
-  for (const cell of grid) {
-    const {x,y} = hexToPixel(cell.row, cell.col);
-    const dx = px - x, dy = py - y;
-    const d = dx*dx + dy*dy;
-    if (d < bestDist) { bestDist = d; best = cell; }
+// ── STARS + TREES ────────────────────────────────────
+function makeAtmosphere() {
+  const sky = document.getElementById('bgSky');
+  sky.querySelectorAll('.star,.tree').forEach(e=>e.remove());
+  // Stars
+  for (let i=0;i<35;i++){
+    const s=document.createElement('div');s.className='star';
+    const sz=Math.random()*2+.8;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*50}%;--d:${(Math.random()*2.5+1).toFixed(1)}s;--a:${(Math.random()*.5+.1).toFixed(2)};animation-delay:${(Math.random()*2).toFixed(1)}s;`;
+    sky.appendChild(s);
   }
-  return bestDist < HEX_SIZE*HEX_SIZE ? best : null;
+  // Trees on sides
+  const treeEmojis=['🌲','🌳','🌲','🌲','🌳'];
+  const bf=battlefield.getBoundingClientRect();
+  const pathW=bf.width*.25, sideW=(bf.width-pathW)/2;
+  for(let i=0;i<8;i++){
+    const t=document.createElement('div');t.className='tree';
+    const onLeft=i<4;
+    const x=onLeft ? Math.random()*sideW*.8 : bf.width-Math.random()*sideW*.8;
+    const y=10+Math.random()*80;
+    t.style.cssText=`left:${x}px;top:${y}%;font-size:${(Math.random()*.6+1)}rem;--d:${(Math.random()*2+3).toFixed(1)}s;animation-delay:${(Math.random()*2).toFixed(1)}s;`;
+    t.textContent=treeEmojis[Math.floor(Math.random()*treeEmojis.length)];
+    sky.appendChild(t);
+  }
 }
 
-function hexNeighbors(row, col) {
-  const isOdd = row % 2;
-  const dirs = isOdd
-    ? [[0,1],[0,-1],[-1,0],[-1,1],[1,0],[1,1]]
-    : [[0,1],[0,-1],[-1,-1],[-1,0],[1,-1],[1,0]];
-  return dirs.map(([dr,dc]) => getCell(row+dr, col+dc)).filter(Boolean);
+// ════════════════════════════════════════════════════
+//  DECK BUILDER
+// ════════════════════════════════════════════════════
+function showDeckBuilder() {
+  playerDeck=[];
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('deckScreen').classList.remove('hidden');
+  renderDeckBuilder();
 }
 
-function getCell(r, c) {
-  return grid.find(cell => cell.row === r && cell.col === c) || null;
-}
-
-// ── INIT GAME ────────────────────────────────────────────
-function initGame() {
-  // Compute hex size based on screen
-  const W = window.innerWidth;
-  const H = window.innerHeight;
-  const panelH = 160; // bottom panel height
-  const hudH   = 80;
-  const availH = H - panelH - hudH;
-  const availW = W - 20;
-
-  const sizeFromH = availH / (GRID_ROWS * 1.5 + 0.5);
-  const sizeFromW = availW / (GRID_COLS * Math.sqrt(3) + Math.sqrt(3)/2);
-  HEX_SIZE = Math.floor(Math.min(sizeFromH, sizeFromW, 38));
-
-  // Build grid
-  grid = [];
-  for (let r = 0; r < GRID_ROWS; r++) {
-    for (let c = 0; c < GRID_COLS; c++) {
-      grid.push(makeCell(r, c));
+function renderDeckBuilder() {
+  // Slots
+  const sEl=document.getElementById('deckSlots');
+  sEl.innerHTML='';
+  for(let i=0;i<8;i++){
+    const sl=document.createElement('div');
+    sl.className='dslot'+(i<playerDeck.length?' filled':'');
+    if(i<playerDeck.length){
+      const def=ALL_CARDS.find(c=>c.id===playerDeck[i]);
+      sl.innerHTML=`${def.emoji}<span class="dslot-name">${def.name.split(' ')[0]}</span>`;
+      sl.title=`Retirer ${def.name}`;
+      sl.addEventListener('click',()=>{playerDeck.splice(i,1);renderDeckBuilder();});
     }
+    sEl.appendChild(sl);
   }
+  document.getElementById('deckCountVal').textContent=playerDeck.length;
 
-  // Set canvas size
-  const pts = grid.map(cell => hexToPixel(cell.row, cell.col));
-  const maxX = Math.max(...pts.map(p => p.x)) + HEX_SIZE * 1.2;
-  const maxY = Math.max(...pts.map(p => p.y)) + HEX_SIZE * 1.2;
-  hexCanvas.width  = maxX + HEX_SIZE;
-  hexCanvas.height = maxY + HEX_SIZE * 0.6;
-
-  // Offset so hex grid is centered
-  hexCanvas.style.marginTop = `${hudH}px`;
-
-  // Place starting territories
-  // Player: bottom 2 rows, Enemy: top 2 rows
-  for (const cell of grid) {
-    if (cell.row >= GRID_ROWS - 2) cell.owner = PLAYER;
-    else if (cell.row <= 1) cell.owner = ENEMY;
-  }
-
-  // Game vars
-  playerSpores = 3;
-  turn = 'player';
-  turnCount = 1;
-  gameOver = false;
-  selectedShroom = 0;
-  animating = false;
-
-  // Unlock shrooms based on progress
-  SHROOMS[0].unlocked = true;
-  SHROOMS[1].unlocked = true;
-  SHROOMS[2].unlocked = turnCount >= 5;
-  SHROOMS[3].unlocked = turnCount >= 10;
-
-  buildShroomSelector();
-  updateSporesDots();
-  updateHUD();
-  drawGrid();
-  setInfo('Tape une case verte adjacente pour poser ton champignon !');
-}
-
-// ── DRAW ─────────────────────────────────────────────────
-function drawGrid() {
-  hCtx.clearRect(0, 0, hexCanvas.width, hexCanvas.height);
-
-  for (const cell of grid) {
-    drawHex(cell);
-  }
-  // Second pass: draw emojis on top
-  for (const cell of grid) {
-    if (cell.shroom) drawShroomEmoji(cell);
-  }
-}
-
-function hexPath(cx, cy, size) {
-  hCtx.beginPath();
-  for (let i = 0; i < 6; i++) {
-    const angle = (Math.PI / 180) * (60 * i - 30);
-    const x = cx + size * Math.cos(angle);
-    const y = cy + size * Math.sin(angle);
-    i === 0 ? hCtx.moveTo(x, y) : hCtx.lineTo(x, y);
-  }
-  hCtx.closePath();
-}
-
-function drawHex(cell) {
-  const {x, y} = hexToPixel(cell.row, cell.col);
-  const cx = x + HEX_SIZE * 0.6;
-  const cy = y + HEX_SIZE * 0.6;
-  const s = HEX_SIZE - 2;
-
-  // Glow effect
-  if (cell.glow > 0) {
-    hCtx.save();
-    hCtx.shadowBlur = cell.glow * 20;
-    hCtx.shadowColor = cell.owner === PLAYER ? '#7fff4f' : '#e74c3c';
-    cell.glow = Math.max(0, cell.glow - 0.05);
-  }
-
-  // Fill color
-  let fillColor, strokeColor;
-  if (cell.owner === PLAYER) {
-    fillColor   = cell.poison > 0 ? '#9b59b6' : (cell.shroom ? '#4CAF50' : '#2d6a2d');
-    strokeColor = cell.shroom ? '#7fff4f' : '#3d9e3d';
-  } else if (cell.owner === ENEMY) {
-    fillColor   = cell.blocked > 0 ? '#7f3d3d' : '#6a1515';
-    strokeColor = cell.blocked > 0 ? '#a04040' : '#c0392b';
-  } else {
-    fillColor   = '#1a2e1a';
-    strokeColor = '#2d4a2d';
-  }
-
-  hexPath(cx, cy, s);
-  hCtx.fillStyle = fillColor;
-  hCtx.fill();
-  hCtx.strokeStyle = strokeColor;
-  hCtx.lineWidth = cell.shroom ? 2.5 : 1.5;
-  hCtx.stroke();
-
-  if (cell.glow > 0) hCtx.restore();
-
-  // Newly placed pulse ring
-  if (cell.newlyPlaced > 0) {
-    hCtx.save();
-    hexPath(cx, cy, s + (1-cell.newlyPlaced)*8);
-    hCtx.strokeStyle = `rgba(127,255,79,${cell.newlyPlaced * 0.6})`;
-    hCtx.lineWidth = 3;
-    hCtx.stroke();
-    hCtx.restore();
-    cell.newlyPlaced = Math.max(0, cell.newlyPlaced - 0.04);
-  }
-
-  // Blocked indicator
-  if (cell.blocked > 0) {
-    hCtx.save();
-    hCtx.font = `${HEX_SIZE * 0.4}px serif`;
-    hCtx.textAlign = 'center';
-    hCtx.textBaseline = 'middle';
-    hCtx.globalAlpha = 0.7;
-    hCtx.fillText('🚫', cx, cy);
-    hCtx.restore();
-  }
-
-  // Poison indicator
-  if (cell.poison > 0 && cell.owner === ENEMY) {
-    hCtx.save();
-    hCtx.font = `${HEX_SIZE * 0.35}px serif`;
-    hCtx.textAlign = 'center';
-    hCtx.textBaseline = 'middle';
-    hCtx.fillText('☠️', cx, cy);
-    hCtx.restore();
-  }
-
-  // Highlight: adjacent to player and empty = clickable
-  if (cell.owner === EMPTY && isAdjacentToPlayer(cell)) {
-    hexPath(cx, cy, s);
-    hCtx.strokeStyle = 'rgba(127,255,79,0.5)';
-    hCtx.lineWidth = 2;
-    hCtx.stroke();
-    // Subtle green tint
-    hexPath(cx, cy, s);
-    hCtx.fillStyle = 'rgba(127,255,79,0.07)';
-    hCtx.fill();
-  }
-}
-
-function drawShroomEmoji(cell) {
-  const {x, y} = hexToPixel(cell.row, cell.col);
-  const cx = x + HEX_SIZE * 0.6;
-  const cy = y + HEX_SIZE * 0.6;
-  hCtx.save();
-  hCtx.font = `${HEX_SIZE * 0.55}px serif`;
-  hCtx.textAlign = 'center';
-  hCtx.textBaseline = 'middle';
-  hCtx.fillText(cell.shroom.emoji, cx, cy);
-  hCtx.restore();
-}
-
-function isAdjacentToPlayer(cell) {
-  return hexNeighbors(cell.row, cell.col).some(n => n.owner === PLAYER);
-}
-
-function isAdjacentToEnemy(cell) {
-  return hexNeighbors(cell.row, cell.col).some(n => n.owner === ENEMY);
-}
-
-// ── SPORES UI ────────────────────────────────────────────
-function updateSporesDots() {
-  const dots = document.getElementById('sporesDots');
-  dots.innerHTML = '';
-  for (let i = 0; i < maxSpores; i++) {
-    const d = document.createElement('div');
-    d.className = 'spore-dot' + (i < playerSpores ? ' filled' : '');
-    dots.appendChild(d);
-  }
-}
-
-function buildShroomSelector() {
-  const sel = document.getElementById('mushroomSelector');
-  sel.innerHTML = '';
-  SHROOMS.forEach((sh, i) => {
-    const btn = document.createElement('div');
-    btn.className = 'shroom-btn' + (i === selectedShroom ? ' selected' : '') + (!sh.unlocked ? ' locked' : '');
-    btn.innerHTML = `
-      ${!sh.unlocked ? '<span class="lock-icon">🔒</span>' : ''}
-      <span class="shroom-btn-emoji">${sh.emoji}</span>
-      <span class="shroom-btn-name">${sh.name}</span>
-      <span class="shroom-btn-cost">✨${sh.cost}</span>
+  // All cards
+  const gEl=document.getElementById('allCardsGrid');
+  gEl.innerHTML='';
+  ALL_CARDS.forEach(def=>{
+    const isSel=playerDeck.includes(def.id);
+    const isFull=playerDeck.length>=8&&!isSel;
+    const c=document.createElement('div');
+    c.className='acard'+(isSel?' sel':'')+(isFull?' dim':'');
+    c.innerHTML=`
+      <div class="acard-rarity ${def.rarity}"></div>
+      ${isSel?'<span style="position:absolute;top:2px;left:5px;font-size:.6rem;color:var(--gold);font-family:var(--font-h)">✓</span>':''}
+      <span class="acard-cost">${def.cost}</span>
+      <span class="acard-emoji">${def.emoji}</span>
+      <span class="acard-name">${def.name}</span>
+      <span class="acard-type">${def.rarity}</span>
+      <span class="acard-stats">❤️${def.hp} ⚔️${def.dmg}</span>
     `;
-    if (sh.unlocked) {
-      btn.addEventListener('click', () => {
-        selectedShroom = i;
-        buildShroomSelector();
-        setInfo(sh.desc);
+    if(!isFull){
+      c.addEventListener('click',()=>{
+        if(isSel) playerDeck=playerDeck.filter(id=>id!==def.id);
+        else if(playerDeck.length<8) playerDeck.push(def.id);
+        renderDeckBuilder();
       });
     }
-    sel.appendChild(btn);
+    gEl.appendChild(c);
   });
+
+  // Play button
+  const btn=document.getElementById('btnPlayDeck');
+  btn.disabled=playerDeck.length!==8;
 }
 
-// ── HUD ──────────────────────────────────────────────────
-function updateHUD() {
-  const total = grid.length;
-  playerTerr = grid.filter(c => c.owner === PLAYER).length;
-  enemyTerr  = grid.filter(c => c.owner === ENEMY).length;
-
-  document.getElementById('hudPlayer').textContent = playerTerr;
-  document.getElementById('hudEnemy').textContent  = enemyTerr;
-  document.getElementById('barPlayer').style.width = (playerTerr / total * 100) + '%';
-  document.getElementById('barEnemy').style.width  = (enemyTerr  / total * 100) + '%';
-
-  const wc = document.getElementById('waveCounter');
-  if (wc) wc.textContent = `Tour ${turnCount}`;
-}
-
-function setInfo(txt) {
-  document.getElementById('infoText').textContent = txt;
-}
-
-// ── PLAYER ACTION ─────────────────────────────────────────
-function handleTap(px, py) {
-  if (turn !== 'player' || gameOver || animating) return;
-  const cell = pixelToHex(px, py);
-  if (!cell) return;
-
-  const shroom = SHROOMS[selectedShroom];
-  if (!shroom.unlocked) { toast('🔒 Pas encore débloqué !'); return; }
-  if (playerSpores < shroom.cost) { toast(`❌ Pas assez de spores ! (${shroom.cost} requis)`); return; }
-
-  if (shroom.id === 'grass') {
-    // Place on empty adjacent cell
-    if (cell.owner !== EMPTY || !isAdjacentToPlayer(cell)) {
-      setInfo('Place sur une case verte adjacente !'); return;
-    }
-    cell.owner = PLAYER;
-    cell.shroom = { ...shroom };
-    cell.glow = 1;
-    cell.newlyPlaced = 1;
-    playerSpores -= shroom.cost;
-    toast('🌿 +1 territoire !');
-
-  } else if (shroom.id === 'shroom') {
-    // Block enemy adjacent cells
-    if (cell.owner !== PLAYER || !isAdjacentToEnemy(cell)) {
-      setInfo('Place sur une de TES cases proche de l\'ennemi !'); return;
-    }
-    const neighbors = hexNeighbors(cell.row, cell.col).filter(n => n.owner === ENEMY);
-    if (neighbors.length === 0) { setInfo('Doit être proche d\'une case ennemie !'); return; }
-    neighbors.forEach(n => { n.blocked = 3; n.glow = 1; }); // 3 turns blocked
-    cell.shroom = { ...shroom };
-    cell.glow = 1;
-    cell.newlyPlaced = 1;
-    playerSpores -= shroom.cost;
-    toast('🍄 Cases ennemies bloquées !');
-
-  } else if (shroom.id === 'poison') {
-    // Corrode 2 adjacent enemy cells
-    if (cell.owner !== PLAYER || !isAdjacentToEnemy(cell)) {
-      setInfo('Place sur une de TES cases proche de l\'ennemi !'); return;
-    }
-    const neighbors = hexNeighbors(cell.row, cell.col).filter(n => n.owner === ENEMY && n.blocked === 0);
-    if (neighbors.length === 0) { setInfo('Aucune case ennemie accessible !'); return; }
-    const targets = neighbors.slice(0, 2);
-    targets.forEach(n => { n.poison = 3; n.glow = 1; }); // will convert after 3 turns
-    cell.shroom = { ...shroom };
-    cell.glow = 1;
-    cell.newlyPlaced = 1;
-    playerSpores -= shroom.cost;
-    toast('💜 Poison propagé !');
-
-  } else if (shroom.id === 'thunder') {
-    // Destroy 3 enemy cells anywhere adjacent to player
-    const enemyCells = grid.filter(c => c.owner === ENEMY && c.blocked === 0);
-    if (enemyCells.length === 0) { setInfo('Aucune case ennemie à détruire !'); return; }
-    // Sort by distance to player territory: pick closest 3
-    const playerCells = grid.filter(c => c.owner === PLAYER);
-    const scored = enemyCells.map(e => {
-      const minDist = Math.min(...playerCells.map(p =>
-        Math.hypot(e.row - p.row, e.col - p.col)
-      ));
-      return { cell: e, dist: minDist };
-    }).sort((a,b) => a.dist - b.dist);
-    const targets = scored.slice(0, 3).map(s => s.cell);
-    targets.forEach(n => { n.owner = EMPTY; n.shroom = null; n.glow = 1; n.newlyPlaced = 0.8; });
-    playerSpores -= shroom.cost;
-    toast('⚡ Foudre ! 3 cases détruites !');
-  }
-
-  updateSporesDots();
-  updateHUD();
-  drawGrid();
-  checkWinLose();
-}
-
-// ── END TURN ─────────────────────────────────────────────
-function endPlayerTurn() {
-  if (turn !== 'player' || gameOver || animating) return;
-  turn = 'enemy';
-  document.getElementById('turnBadge').textContent = '🔴 TOUR ENNEMI';
-  document.getElementById('turnBadge').className = 'turn-badge enemy-turn';
-  document.getElementById('endTurnBtn').disabled = true;
-
-  // Process poison
-  for (const cell of grid) {
-    if (cell.poison > 0 && cell.owner === ENEMY) {
-      cell.poison--;
-      if (cell.poison === 0) { cell.owner = PLAYER; cell.shroom = null; cell.glow = 1; }
-    }
-  }
-
-  drawGrid();
-  updateHUD();
-
-  // Enemy AI turn after short delay
-  animating = true;
-  setTimeout(() => {
-    enemyTurn();
-  }, 1000);
-}
-
-// ── ENEMY AI ─────────────────────────────────────────────
-function enemyTurn() {
-  turnCount++;
-
-  // Unlock shrooms for player as turns progress
-  if (turnCount >= 4) SHROOMS[2].unlocked = true;
-  if (turnCount >= 8) SHROOMS[3].unlocked = true;
-  buildShroomSelector();
-
-  // Enemy gets spores too (slightly less)
-  const enemySpores = 2 + Math.floor(turnCount / 4);
-
-  // AI strategy: expand toward player, prioritize blocking
-  const emptyCellsNearEnemy = grid.filter(c =>
-    c.owner === EMPTY && hexNeighbors(c.row, c.col).some(n => n.owner === ENEMY)
-  );
-
-  // Score cells: prefer cells that are also near player territory
-  const scored = emptyCellsNearEnemy.map(c => {
-    const nearPlayer = hexNeighbors(c.row, c.col).filter(n => n.owner === PLAYER).length;
-    const rowScore = c.row; // prefer lower rows (toward player)
-    return { cell: c, score: nearPlayer * 3 + rowScore * 0.5 + Math.random() * 0.5 };
-  }).sort((a, b) => b.score - a.score);
-
-  let usedSpores = 0;
-  let moved = 0;
-
-  for (const { cell } of scored) {
-    if (usedSpores >= enemySpores) break;
-    if (cell.blocked > 0) continue;
-    cell.owner = ENEMY;
-    cell.glow = 1;
-    cell.newlyPlaced = 1;
-    usedSpores++;
-    moved++;
-  }
-
-  // Decrease blocked counters
-  for (const cell of grid) {
-    if (cell.blocked > 0) cell.blocked--;
-  }
-
-  // Enemy occasionally uses a "counter-attack": convert a weakly defended player cell
-  if (turnCount >= 5 && Math.random() < 0.35) {
-    const vulnerablePlayerCells = grid.filter(c =>
-      c.owner === PLAYER && !c.shroom &&
-      hexNeighbors(c.row, c.col).filter(n => n.owner === ENEMY).length >= 2
-    );
-    if (vulnerablePlayerCells.length > 0) {
-      const target = vulnerablePlayerCells[Math.floor(Math.random() * vulnerablePlayerCells.length)];
-      target.owner = ENEMY;
-      target.shroom = null;
-      target.glow = 1;
-      target.newlyPlaced = 1;
-    }
-  }
-
-  drawGrid();
-  updateHUD();
-
-  // Back to player
-  setTimeout(() => {
-    turn = 'player';
-    playerSpores = Math.min(maxSpores, playerSpores + 3); // refill spores
-    if (turnCount >= 6) maxSpores = 6;
-    if (turnCount >= 10) maxSpores = 7;
-    document.getElementById('turnBadge').textContent = '🌿 TON TOUR';
-    document.getElementById('turnBadge').className = 'turn-badge player-turn';
-    document.getElementById('endTurnBtn').disabled = false;
-    updateSporesDots();
-    animating = false;
-    setInfo('À toi ! Pose un champignon et clique "Fin du tour"');
-    drawGrid();
-    checkWinLose();
-  }, 600);
-}
-
-// ── WIN / LOSE ────────────────────────────────────────────
-function checkWinLose() {
-  if (gameOver) return;
-  const total = grid.length;
-  const pct   = playerTerr / total;
-  const ePct  = enemyTerr  / total;
-
-  // Win: 65% territory
-  if (pct >= 0.65) { endGame(true, 'Conquête totale !'); return; }
-  // Lose: enemy has 65%
-  if (ePct >= 0.65) { endGame(false, 'Le royaume est perdu...'); return; }
-  // Enemy base wiped
-  if (enemyTerr <= 2) { endGame(true, 'L\'ennemi est vaincu !'); return; }
-  // Player base wiped
-  if (playerTerr <= 2) { endGame(false, 'Ta forêt est détruite !'); return; }
-}
-
-function endGame(win, sub) {
-  gameOver = true;
-  setTimeout(() => {
-    document.getElementById('resultEmoji').textContent = win ? '🏆' : '☠️';
-    document.getElementById('resultTitle').textContent = win ? 'Victoire !' : 'Défaite !';
-    document.getElementById('resultTitle').className = 'result-title ' + (win ? 'win' : 'lose');
-    document.getElementById('resultSub').textContent = sub;
-    document.getElementById('resTurns').textContent  = turnCount;
-    document.getElementById('resPlayer').textContent = playerTerr;
-    document.getElementById('resEnemy').textContent  = enemyTerr;
-    document.getElementById('resultScreen').classList.remove('hidden');
-  }, 600);
-}
-
-// ── TOAST ────────────────────────────────────────────────
-let toastTimeout;
-function toast(msg) {
-  const wrap = document.getElementById('toastWrap');
-  wrap.innerHTML = '';
-  clearTimeout(toastTimeout);
-  const el = document.createElement('div');
-  el.className = 'toast';
-  el.textContent = msg;
-  el.style.background = 'rgba(20,40,20,0.95)';
-  el.style.border = '2px solid rgba(127,255,79,0.3)';
-  el.style.color = '#fff';
-  wrap.appendChild(el);
-  toastTimeout = setTimeout(() => { wrap.innerHTML = ''; }, 900);
-}
-
-// ── ANIMATION LOOP ───────────────────────────────────────
-function animLoop() {
-  let needRedraw = false;
-  for (const cell of grid) {
-    if (cell.glow > 0 || cell.newlyPlaced > 0) { needRedraw = true; break; }
-  }
-  if (needRedraw) drawGrid();
-  requestAnimationFrame(animLoop);
-}
-animLoop();
-
-// ── TOUCH / CLICK ────────────────────────────────────────
-hexCanvas.addEventListener('touchstart', e => {
-  e.preventDefault();
-  const rect = hexCanvas.getBoundingClientRect();
-  const t = e.changedTouches[0];
-  handleTap(t.clientX - rect.left, t.clientY - rect.top);
-}, { passive: false });
-
-hexCanvas.addEventListener('click', e => {
-  const rect = hexCanvas.getBoundingClientRect();
-  handleTap(e.clientX - rect.left, e.clientY - rect.top);
-});
-
-document.getElementById('endTurnBtn').addEventListener('click', endPlayerTurn);
-
-// ── BUTTONS ──────────────────────────────────────────────
-document.getElementById('startBtn').addEventListener('click', () => {
-  document.getElementById('startScreen').classList.add('hidden');
-  document.getElementById('hud').style.display = '';
-  document.getElementById('turnBar').style.display = '';
-  document.getElementById('bottomPanel').style.display = '';
-  document.getElementById('infoPanel').style.display = '';
-  document.getElementById('waveCounter').style.display = '';
-  initGame();
-});
-
-document.getElementById('retryBtn').addEventListener('click', () => {
+document.getElementById('btnGoToDeck').addEventListener('click', showDeckBuilder);
+document.getElementById('btnPlayDeck').addEventListener('click', startGame);
+document.getElementById('btnNewDeck').addEventListener('click',()=>{
   document.getElementById('resultScreen').classList.add('hidden');
-  initGame();
+  document.getElementById('gameWrap').style.display='none';
+  document.getElementById('startScreen').classList.remove('hidden');
 });
 
-// Hide game UI on start
-document.getElementById('hud').style.display = 'none';
-document.getElementById('turnBar').style.display = 'none';
-document.getElementById('bottomPanel').style.display = 'none';
-document.getElementById('infoPanel').style.display = 'none';
-if (document.getElementById('waveCounter'))
-  document.getElementById('waveCounter').style.display = 'none';
+// ════════════════════════════════════════════════════
+//  GAME
+// ════════════════════════════════════════════════════
+function startGame() {
+  document.getElementById('deckScreen').classList.add('hidden');
+  document.getElementById('resultScreen').classList.add('hidden');
+  const gw=document.getElementById('gameWrap');
+  gw.style.display='flex';
+
+  playerHp=MAX_HP; enemyHp=MAX_HP;
+  elixir=4; maxElixir=10;
+  units=[]; uid=0; unitsSent=0;
+  gameOver=false; deckCursor=0;
+  unitsLayer.innerHTML='';
+
+  clearInterval(elixirItv);
+  clearTimeout(enemyTmo);
+  cancelAnimationFrame(frameId);
+
+  updateHpDisplay();
+  updateElixir();
+  dealHand();
+  makeAtmosphere();
+
+  startTime=Date.now();
+
+  // Elixir regen +1 / 2.3s
+  elixirItv=setInterval(()=>{
+    if(gameOver)return;
+    if(elixir<maxElixir){elixir++;updateElixir();renderHand();}
+  },2300);
+
+  // Enemy schedule
+  function sched(){
+    if(gameOver)return;
+    const el=(Date.now()-startTime)/1000;
+    const delay=Math.max(2000,5800-el*42);
+    enemyTmo=setTimeout(()=>{spawnEnemy();sched();},delay);
+  }
+  sched();
+
+  frameId=requestAnimationFrame(gameStep);
+}
+
+// ── HAND ──────────────────────────────────────────
+function dealHand(){
+  cardHand=[];
+  for(let i=0;i<4;i++){cardHand.push(playerDeck[i%playerDeck.length]);deckCursor=i+1;}
+  renderHand();
+}
+
+function renderHand(){
+  cardHandEl.innerHTML='';
+  cardHand.forEach((cardId,idx)=>{
+    const def=ALL_CARDS.find(c=>c.id===cardId);
+    const ok=elixir>=def.cost;
+    const card=document.createElement('div');
+    card.className='card'+(ok?'':' cant');
+    card.innerHTML=`
+      <div class="card-rarity-bar ${def.rarity}"></div>
+      <span class="card-emoji">${def.emoji}</span>
+      <span class="card-name">${def.name}</span>
+      <span class="card-power">❤️${def.hp} ⚔️${def.dmg}</span>
+      <span class="card-cost-badge">${def.cost}</span>
+    `;
+    card.addEventListener('click',()=>playCard(idx));
+    card.addEventListener('touchstart',e=>{e.preventDefault();card.classList.add('lift');},{passive:false});
+    card.addEventListener('touchend',e=>{e.preventDefault();card.classList.remove('lift');playCard(idx);},{passive:false});
+    cardHandEl.appendChild(card);
+  });
+
+  // Next card preview
+  const nextId=playerDeck[deckCursor%playerDeck.length];
+  const nDef=ALL_CARDS.find(c=>c.id===nextId);
+  const nxt=document.createElement('div');
+  nxt.className='next-card-hint';
+  nxt.innerHTML=`<span class="next-label">Suite</span><span class="next-emoji">${nDef.emoji}</span>`;
+  cardHandEl.appendChild(nxt);
+}
+
+function playCard(idx){
+  if(gameOver)return;
+  const cardId=cardHand[idx];
+  const def=ALL_CARDS.find(c=>c.id===cardId);
+  if(elixir<def.cost){toast(`❌ Il faut ${def.cost} élixir !`);return;}
+  elixir-=def.cost; unitsSent++;
+  updateElixir();
+  const fRect=battlefield.getBoundingClientRect();
+  const spawnY=def.tower?fRect.height*.72:fRect.height*.82;
+  const u=spawnUnit(def,spawnY,true);
+  spawnRing(u.x,u.y);
+  // Cycle
+  const nextId=playerDeck[deckCursor%playerDeck.length];
+  deckCursor++;
+  cardHand.splice(idx,1,nextId);
+  renderHand();
+  toast(`${def.emoji} ${def.name} déployé !`);
+}
+
+// ── SPAWN ──────────────────────────────────────────
+function spawnUnit(def,y,isPlayer){
+  const fRect=battlefield.getBoundingClientRect();
+  const cx=fRect.width/2;
+  const el=document.createElement('div');
+  el.className='unit '+(isPlayer?'is-player':'is-enemy');
+  el.innerHTML=`
+    <div class="unit-badge">
+      <span class="unit-name">${def.name}</span>
+    </div>
+    <span class="unit-emoji-el">${def.emoji}</span>
+    <div class="unit-hpbar-wrap"><div class="unit-hpbar" id="uhp${++uid}" style="width:100%"></div></div>
+  `;
+  el.style.left=cx+'px'; el.style.top=y+'px';
+  unitsLayer.appendChild(el);
+  const u={id:uid,el,def,hp:def.hp,maxHp:def.hp,x:cx,y,isPlayer,tower:def.tower,dead:false,cooldown:0};
+  units.push(u); return u;
+}
+
+function spawnEnemy(){
+  if(gameOver)return;
+  const elapsed=(Date.now()-startTime)/1000;
+  const budget=elapsed<12?2:elapsed<28?3:elapsed<48?4:elapsed<70?5:6;
+  const pool=ENEMY_POOL.filter(d=>d.cost<=budget);
+  if(!pool.length)return;
+  const def=pool[Math.floor(Math.random()*pool.length)];
+  const fRect=battlefield.getBoundingClientRect();
+  spawnUnit(def,fRect.height*.12,false);
+}
+
+function spawnRing(x,y){
+  const r=document.createElement('div');
+  r.className='spawn-ring';
+  r.style.left=(x-5)+'px'; r.style.top=(y-5)+'px';
+  unitsLayer.appendChild(r);
+  setTimeout(()=>r.remove(),420);
+}
+
+// ── GAME LOOP ──────────────────────────────────────
+const FPS=30,TICK=1000/FPS;
+let lastTick=0;
+
+function gameStep(ts){
+  if(gameOver)return;
+  frameId=requestAnimationFrame(gameStep);
+  if(ts-lastTick<TICK)return;
+  lastTick=ts;
+  const fRect=battlefield.getBoundingClientRect();
+  const fH=fRect.height;
+
+  for(const u of units){
+    if(u.dead)continue;
+    u.cooldown=Math.max(0,u.cooldown-1);
+    if(u.tower){
+      const enemies=units.filter(e=>e.isPlayer!==u.isPlayer&&!e.dead);
+      let tgt=null,best=Infinity;
+      for(const e of enemies){const d=Math.abs(u.y-e.y);if(d<best&&d<=u.def.range){best=d;tgt=e;}}
+      if(tgt&&u.cooldown===0){doAttack(u,tgt,null,fH);u.cooldown=Math.round(FPS*1.1);}
+      continue;
+    }
+    const enemies=units.filter(e=>e.isPlayer!==u.isPlayer&&!e.dead);
+    let tgt=null,bestD=Infinity;
+    for(const e of enemies){const d=Math.abs(u.y-e.y);if(d<bestD){bestD=d;tgt=e;}}
+    const castleY=u.isPlayer?0:fH;
+    const castleD=Math.abs(u.y-castleY);
+    if(tgt&&bestD<=u.def.range){
+      if(u.cooldown===0){doAttack(u,tgt,null,fH);u.cooldown=Math.round(FPS*.82);}
+    } else if(!tgt&&castleD<=u.def.range){
+      if(u.cooldown===0){doAttack(u,null,u.isPlayer,fH);u.cooldown=Math.round(FPS*.82);}
+    } else {
+      const dir=u.isPlayer?-1:1;
+      const friends=units.filter(e=>e.isPlayer===u.isPlayer&&!e.dead&&e.id!==u.id&&!e.tower);
+      const blocked=friends.some(e=>{
+        const ahead=u.isPlayer?e.y<u.y:e.y>u.y;
+        return ahead&&Math.abs(u.y-e.y)<24;
+      });
+      if(!blocked){u.y+=dir*u.def.spd*2.2;u.el.style.top=u.y+'px';}
+    }
+  }
+
+  units=units.filter(u=>{if(u.dead){u.el.remove();return false;}return true;});
+  renderHand();
+  checkWin();
+}
+
+function doAttack(attacker,targetUnit,attackerIsPlayer,fH){
+  const emojiEl=attacker.el.querySelector('.unit-emoji-el');
+  if(emojiEl){emojiEl.classList.remove('atk');void emojiEl.offsetWidth;emojiEl.classList.add('atk');setTimeout(()=>emojiEl.classList.remove('atk'),200);}
+  if(targetUnit){
+    targetUnit.hp-=attacker.def.dmg;
+    const bar=document.getElementById('uhp'+targetUnit.id);
+    if(bar)bar.style.width=Math.max(0,targetUnit.hp/targetUnit.maxHp*100)+'%';
+    showHit(targetUnit.x,targetUnit.y,'💥');
+    if(targetUnit.hp<=0){targetUnit.dead=true;showHit(targetUnit.x,targetUnit.y,'💀');}
+  } else {
+    if(attacker.isPlayer){
+      enemyHp=Math.max(0,enemyHp-attacker.def.dmg);
+      showHit(battlefield.getBoundingClientRect().width/2,25,'🔥');
+    } else {
+      playerHp=Math.max(0,playerHp-attacker.def.dmg);
+      showHit(battlefield.getBoundingClientRect().width/2,fH-25,'🔥');
+    }
+    updateHpDisplay();
+  }
+}
+
+function showHit(x,y,emoji){
+  const el=document.createElement('div');
+  el.className='hit-fx';el.textContent=emoji;
+  el.style.left=(x-10)+'px';el.style.top=y+'px';
+  unitsLayer.appendChild(el);
+  setTimeout(()=>el.remove(),560);
+}
+
+function updateHpDisplay(){
+  document.getElementById('playerHpNum').textContent=Math.max(0,playerHp);
+  document.getElementById('enemyHpNum').textContent =Math.max(0,enemyHp);
+  document.getElementById('playerHpFill').style.width=Math.max(0,playerHp/MAX_HP*100)+'%';
+  document.getElementById('enemyHpFill').style.width =Math.max(0,enemyHp/MAX_HP*100)+'%';
+}
+
+function updateElixir(){
+  elixir=Math.min(maxElixir,Math.max(0,Math.round(elixir)));
+  const bar=document.getElementById('elixirBarH');
+  bar.innerHTML='';
+  for(let i=0;i<maxElixir;i++){
+    const d=document.createElement('div');
+    d.className='edot'+(i<elixir?' filled':'');
+    bar.appendChild(d);
+  }
+  document.getElementById('elixirNum').textContent=elixir;
+}
+
+function checkWin(){
+  if(gameOver)return;
+  if(enemyHp<=0){endGame(true);return;}
+  if(playerHp<=0){endGame(false);}
+}
+
+function endGame(win){
+  gameOver=true;
+  cancelAnimationFrame(frameId);
+  clearInterval(elixirItv);
+  clearTimeout(enemyTmo);
+  const elapsed=Math.round((Date.now()-startTime)/1000);
+  setTimeout(()=>{
+    document.getElementById('resDecor').textContent=win?'🏆':'💀';
+    document.getElementById('resTitle').textContent=win?'Victoire !':'Défaite !';
+    document.getElementById('resTitle').className='res-title '+(win?'win':'lose');
+    document.getElementById('resSub').textContent=win?'Le château ennemi s\'est écroulé !':'Ton château est en ruines...';
+    document.getElementById('resTime').textContent=elapsed;
+    document.getElementById('resUnits').textContent=unitsSent;
+    document.getElementById('resEhp').textContent=Math.max(0,enemyHp);
+    document.getElementById('resultScreen').classList.remove('hidden');
+  },700);
+}
+
+// ── TOAST ────────────────────────────────────────────
+let toastTmo;
+function toast(msg){
+  clearTimeout(toastTmo);
+  const w=document.getElementById('toastWrap');w.innerHTML='';
+  const el=document.createElement('div');el.className='toast';el.textContent=msg;
+  w.appendChild(el);
+  toastTmo=setTimeout(()=>{w.innerHTML='';},1150);
+}
+
+// ── RETRY ────────────────────────────────────────────
+document.getElementById('btnRetry').addEventListener('click',()=>{
+  document.getElementById('resultScreen').classList.add('hidden');
+  unitsLayer.innerHTML='';
+  startGame();
+});
 </script>
 </body>
 </html>
