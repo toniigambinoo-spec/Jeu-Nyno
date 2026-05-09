@@ -1,1 +1,1251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Royaume des Champignons</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
+:root {
+  --bg: #1a0a2e;
+  --bg2: #0d1f0e;
+  --player: #7fff4f;
+  --player-dark: #3db800;
+  --player-glow: rgba(127,255,79,0.4);
+  --enemy: #c0392b;
+  --enemy-dark: #7b0000;
+  --enemy-glow: rgba(192,57,43,0.4);
+  --neutral: #2d4a2d;
+  --neutral-border: #3d6b3d;
+  --font-title: 'Fredoka One', cursive;
+  --font-body: 'Nunito', sans-serif;
+}
+
+html, body {
+  width:100%; height:100%;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: var(--font-body);
+  color: #fff;
+  user-select: none;
+  touch-action: none;
+}
+
+/* ── BACKGROUND ── */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── SCREENS ── */
+.screen {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+}
+.screen.hidden { display: none; }
+
+/* ── START SCREEN ── */
+#startScreen {
+  background: radial-gradient(ellipse at 50% 30%, #1e3d1a 0%, #0a160a 100%);
+}
+
+.title-wrap {
+  margin-bottom: 8px;
+  animation: titleBounce 1.5s ease-in-out infinite;
+}
+
+@keyframes titleBounce {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.title-emoji { font-size: 3.5rem; display: block; margin-bottom: 4px; }
+
+.game-title {
+  font-family: var(--font-title);
+  font-size: 2.1rem;
+  line-height: 1.1;
+  background: linear-gradient(135deg, #a8ff5a 0%, #ffe94d 50%, #ff9f43 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 8px rgba(168,255,90,0.4));
+}
+
+.game-tagline {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 28px;
+}
+
+/* Mushroom cards */
+.shroom-showcase {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 28px;
+  width: 100%;
+  max-width: 340px;
+}
+
+.shroom-card {
+  flex: 1;
+  background: rgba(255,255,255,0.05);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 12px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.shroom-emoji { font-size: 1.8rem; }
+
+.shroom-name {
+  font-family: var(--font-title);
+  font-size: 0.7rem;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+.shroom-desc {
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.45);
+  text-align: center;
+  line-height: 1.3;
+}
+
+.btn-play {
+  background: linear-gradient(135deg, #7fff4f, #39d400);
+  border: none;
+  border-radius: 50px;
+  padding: 18px 52px;
+  font-family: var(--font-title);
+  font-size: 1.3rem;
+  color: #0a2200;
+  box-shadow: 0 6px 30px rgba(127,255,79,0.4), 0 2px 0 rgba(0,0,0,0.3);
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s;
+  letter-spacing: 1px;
+}
+.btn-play:active { transform: scale(0.93) translateY(2px); box-shadow: 0 2px 12px rgba(127,255,79,0.3); }
+
+/* ── HUD ── */
+#hud {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  padding: 10px 14px 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 30;
+  background: linear-gradient(to bottom, rgba(10,22,10,0.9), transparent);
+  pointer-events: none;
+}
+
+.hud-side {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.territory-bar-wrap {
+  flex: 1;
+  margin: 0 10px;
+  height: 10px;
+  background: rgba(0,0,0,0.4);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1.5px solid rgba(255,255,255,0.1);
+  position: relative;
+}
+
+.territory-bar-player {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  background: linear-gradient(90deg, #7fff4f, #a8ff70);
+  border-radius: 10px 0 0 10px;
+  transition: width 0.4s ease;
+  box-shadow: 2px 0 8px rgba(127,255,79,0.5);
+}
+
+.territory-bar-enemy {
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  background: linear-gradient(90deg, #e74c3c, #c0392b);
+  border-radius: 0 10px 10px 0;
+  transition: width 0.4s ease;
+  box-shadow: -2px 0 8px rgba(192,57,43,0.5);
+}
+
+.hud-icon { font-size: 1.2rem; }
+
+.hud-score {
+  font-family: var(--font-title);
+  font-size: 0.9rem;
+  color: #7fff4f;
+}
+
+.hud-enemy-score {
+  font-family: var(--font-title);
+  font-size: 0.9rem;
+  color: #e74c3c;
+}
+
+/* Turn indicator */
+#turnBar {
+  position: fixed;
+  top: 42px; left: 0; right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  z-index: 30;
+  pointer-events: none;
+  padding: 4px 0;
+}
+
+.turn-badge {
+  font-family: var(--font-title);
+  font-size: 0.75rem;
+  padding: 5px 16px;
+  border-radius: 50px;
+  letter-spacing: 1px;
+  transition: all 0.3s;
+}
+
+.turn-badge.player-turn {
+  background: rgba(127,255,79,0.2);
+  border: 1.5px solid rgba(127,255,79,0.5);
+  color: #7fff4f;
+  box-shadow: 0 0 12px rgba(127,255,79,0.3);
+}
+
+.turn-badge.enemy-turn {
+  background: rgba(192,57,43,0.2);
+  border: 1.5px solid rgba(192,57,43,0.5);
+  color: #e74c3c;
+  box-shadow: 0 0 12px rgba(192,57,43,0.3);
+}
+
+/* ── GAME CANVAS AREA ── */
+#gameArea {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#hexGrid {
+  position: relative;
+  touch-action: none;
+}
+
+/* ── BOTTOM PANEL ── */
+#bottomPanel {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 30;
+  background: linear-gradient(to top, rgba(5,12,5,0.97) 60%, transparent);
+  padding: 10px 12px 16px;
+}
+
+.mushroom-selector {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+
+.shroom-btn {
+  width: 68px;
+  background: rgba(255,255,255,0.06);
+  border: 2px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  padding: 8px 4px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+
+.shroom-btn:active { transform: scale(0.93); }
+
+.shroom-btn.selected {
+  border-color: rgba(127,255,79,0.7);
+  background: rgba(127,255,79,0.1);
+  box-shadow: 0 0 16px rgba(127,255,79,0.25);
+}
+
+.shroom-btn.locked {
+  opacity: 0.35;
+  filter: grayscale(1);
+}
+
+.shroom-btn-emoji { font-size: 1.6rem; line-height: 1; }
+
+.shroom-btn-name {
+  font-family: var(--font-title);
+  font-size: 0.55rem;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.shroom-btn-cost {
+  font-size: 0.55rem;
+  font-weight: 800;
+  color: #ffe94d;
+}
+
+.shroom-btn .lock-icon {
+  position: absolute;
+  top: 4px; right: 4px;
+  font-size: 0.6rem;
+  opacity: 0.6;
+}
+
+/* Spores counter */
+.spores-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.spores-label {
+  font-family: var(--font-title);
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.5);
+}
+
+.spores-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.spore-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  border: 1.5px solid rgba(255,255,255,0.2);
+  transition: all 0.2s;
+}
+
+.spore-dot.filled {
+  background: #ffe94d;
+  border-color: #ffd700;
+  box-shadow: 0 0 6px rgba(255,233,77,0.6);
+}
+
+/* End turn button */
+.btn-end-turn {
+  width: 100%;
+  max-width: 280px;
+  display: block;
+  margin: 0 auto;
+  background: linear-gradient(135deg, rgba(127,255,79,0.2), rgba(127,255,79,0.08));
+  border: 2px solid rgba(127,255,79,0.4);
+  border-radius: 50px;
+  padding: 11px;
+  font-family: var(--font-title);
+  font-size: 0.9rem;
+  color: #7fff4f;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: 0 0 12px rgba(127,255,79,0.1);
+}
+
+.btn-end-turn:active { transform: scale(0.96); }
+
+/* ── TOAST / POPUP ── */
+#toastWrap {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 60;
+  pointer-events: none;
+}
+
+.toast {
+  font-family: var(--font-title);
+  font-size: 1.8rem;
+  text-align: center;
+  padding: 16px 32px;
+  border-radius: 20px;
+  animation: toastPop 0.8s ease forwards;
+  white-space: nowrap;
+}
+
+@keyframes toastPop {
+  0%   { transform: scale(0.3); opacity: 0; }
+  50%  { transform: scale(1.1); opacity: 1; }
+  70%  { transform: scale(0.96); opacity: 1; }
+  100% { transform: scale(1); opacity: 0; }
+}
+
+/* ── RESULT SCREEN ── */
+#resultScreen {
+  background: rgba(5,12,5,0.97);
+  backdrop-filter: blur(20px);
+}
+
+.result-emoji { font-size: 4rem; margin-bottom: 10px; animation: resultBounce 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes resultBounce { 0%{ transform:scale(0); } 100%{ transform:scale(1); } }
+
+.result-title {
+  font-family: var(--font-title);
+  font-size: 2.4rem;
+  margin-bottom: 6px;
+}
+
+.result-title.win  { color: #7fff4f; text-shadow: 0 0 20px rgba(127,255,79,0.5); }
+.result-title.lose { color: #e74c3c; text-shadow: 0 0 20px rgba(231,76,60,0.5); }
+
+.result-sub {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 28px;
+  letter-spacing: 1px;
+}
+
+.result-stats {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 30px;
+  width: 100%;
+  max-width: 280px;
+}
+
+.result-stat {
+  flex: 1;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  padding: 12px 8px;
+}
+
+.result-stat-val {
+  font-family: var(--font-title);
+  font-size: 1.5rem;
+  color: #ffe94d;
+  display: block;
+}
+
+.result-stat-lbl {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  display: block;
+  margin-top: 2px;
+}
+
+.btn-retry {
+  background: linear-gradient(135deg, #7fff4f, #39d400);
+  border: none;
+  border-radius: 50px;
+  padding: 16px 48px;
+  font-family: var(--font-title);
+  font-size: 1.1rem;
+  color: #0a2200;
+  box-shadow: 0 4px 20px rgba(127,255,79,0.35);
+  cursor: pointer;
+  transition: transform 0.12s;
+}
+.btn-retry:active { transform: scale(0.94); }
+
+/* ── INFO PANEL ── */
+#infoPanel {
+  position: fixed;
+  bottom: 180px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 35;
+  pointer-events: none;
+  text-align: center;
+  transition: opacity 0.3s;
+}
+
+.info-text {
+  font-family: var(--font-title);
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.5);
+  background: rgba(0,0,0,0.5);
+  padding: 5px 14px;
+  border-radius: 50px;
+  letter-spacing: 0.5px;
+}
+
+/* Wave counter */
+#waveCounter {
+  position: fixed;
+  top: 42px;
+  right: 14px;
+  font-family: var(--font-title);
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.35);
+  z-index: 30;
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<!-- START SCREEN -->
+<div class="screen" id="startScreen">
+  <div class="title-wrap">
+    <span class="title-emoji">🍄</span>
+    <div class="game-title">Royaume des<br>Champignons</div>
+  </div>
+  <div class="game-tagline">Conquête de territoire</div>
+
+  <div class="shroom-showcase">
+    <div class="shroom-card">
+      <span class="shroom-emoji">🌿</span>
+      <div class="shroom-name">Herbe</div>
+      <div class="shroom-desc">Colonise les cases voisines</div>
+    </div>
+    <div class="shroom-card">
+      <span class="shroom-emoji">🍄</span>
+      <div class="shroom-name">Champignon</div>
+      <div class="shroom-desc">Bloque l'ennemi 2 tours</div>
+    </div>
+    <div class="shroom-card">
+      <span class="shroom-emoji">💜</span>
+      <div class="shroom-name">Poison</div>
+      <div class="shroom-desc">Ronge le territoire adverse</div>
+    </div>
+    <div class="shroom-card">
+      <span class="shroom-emoji">⚡</span>
+      <div class="shroom-name">Foudre</div>
+      <div class="shroom-desc">Détruit une zone ennemie</div>
+    </div>
+  </div>
+
+  <button class="btn-play" id="startBtn">🌱 JOUER !</button>
+</div>
+
+<!-- HUD -->
+<div id="hud">
+  <div class="hud-side">
+    <span class="hud-icon">🟢</span>
+    <span class="hud-score" id="hudPlayer">0</span>
+  </div>
+  <div class="territory-bar-wrap">
+    <div class="territory-bar-player" id="barPlayer" style="width:50%"></div>
+    <div class="territory-bar-enemy"  id="barEnemy"  style="width:50%"></div>
+  </div>
+  <div class="hud-side">
+    <span class="hud-enemy-score" id="hudEnemy">0</span>
+    <span class="hud-icon">🔴</span>
+  </div>
+</div>
+
+<div id="turnBar">
+  <div class="turn-badge player-turn" id="turnBadge">🌿 TON TOUR</div>
+</div>
+
+<div id="waveCounter" id="waveCounter"></div>
+
+<!-- GAME AREA -->
+<div id="gameArea">
+  <canvas id="hexGrid"></canvas>
+</div>
+
+<!-- BOTTOM PANEL -->
+<div id="bottomPanel">
+  <div class="spores-bar">
+    <span class="spores-label">🌟 Spores :</span>
+    <div class="spores-dots" id="sporesDots"></div>
+  </div>
+  <div class="mushroom-selector" id="mushroomSelector"></div>
+  <button class="btn-end-turn" id="endTurnBtn">Fin du tour ➤</button>
+</div>
+
+<div id="infoPanel"><div class="info-text" id="infoText">Tape sur une case verte pour poser un champignon !</div></div>
+
+<div id="toastWrap"></div>
+
+<!-- RESULT SCREEN -->
+<div class="screen hidden" id="resultScreen">
+  <div class="result-emoji" id="resultEmoji">🏆</div>
+  <div class="result-title" id="resultTitle">Victoire !</div>
+  <div class="result-sub" id="resultSub">Tu as conquis le royaume !</div>
+  <div class="result-stats">
+    <div class="result-stat">
+      <span class="result-stat-val" id="resTurns">0</span>
+      <span class="result-stat-lbl">Tours</span>
+    </div>
+    <div class="result-stat">
+      <span class="result-stat-val" id="resPlayer">0</span>
+      <span class="result-stat-lbl">Tes cases</span>
+    </div>
+    <div class="result-stat">
+      <span class="result-stat-val" id="resEnemy">0</span>
+      <span class="result-stat-lbl">Cases ennemies</span>
+    </div>
+  </div>
+  <button class="btn-retry" id="retryBtn">🔄 Rejouer</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  ROYAUME DES CHAMPIGNONS
+//  Hex grid territory conquest for kids 8+
+// ═══════════════════════════════════════════════════════
+
+// ── Background animated spores ──────────────────────────
+const bgCanvas = document.getElementById('bg-canvas');
+const bgCtx = bgCanvas.getContext('2d');
+let bgSpores = [];
+
+function initBg() {
+  bgCanvas.width  = window.innerWidth;
+  bgCanvas.height = window.innerHeight;
+  bgSpores = [];
+  for (let i = 0; i < 40; i++) {
+    bgSpores.push({
+      x: Math.random() * bgCanvas.width,
+      y: Math.random() * bgCanvas.height,
+      r: Math.random() * 3 + 1,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: -Math.random() * 0.5 - 0.2,
+      alpha: Math.random() * 0.4 + 0.1,
+      color: ['#7fff4f','#ffe94d','#ff9f43','#c46fff'][Math.floor(Math.random()*4)],
+    });
+  }
+}
+
+function animBg() {
+  bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+  for (const s of bgSpores) {
+    s.x += s.vx; s.y += s.vy;
+    if (s.y < -10) { s.y = bgCanvas.height + 10; s.x = Math.random() * bgCanvas.width; }
+    bgCtx.beginPath();
+    bgCtx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+    bgCtx.fillStyle = s.color;
+    bgCtx.globalAlpha = s.alpha;
+    bgCtx.fill();
+    bgCtx.globalAlpha = 1;
+  }
+  requestAnimationFrame(animBg);
+}
+
+initBg();
+animBg();
+window.addEventListener('resize', initBg);
+
+// ── HEX GRID ────────────────────────────────────────────
+const hexCanvas = document.getElementById('hexGrid');
+const hCtx = hexCanvas.getContext('2d');
+
+// Grid config — adapts to screen
+const GRID_ROWS = 9;
+const GRID_COLS = 7;
+
+let HEX_SIZE = 34; // will be recalculated
+
+// Cell states
+const EMPTY   = 0;
+const PLAYER  = 1;
+const ENEMY   = 2;
+const BLOCKED = 3; // mushroom blocker
+
+// Mushroom types
+const SHROOMS = [
+  { id:'grass',   emoji:'🌿', name:'Herbe',     cost:1, desc:'Colonise 1 case adjacente libre', color:'#7fff4f', unlocked:true  },
+  { id:'shroom',  emoji:'🍄', name:'Champignon',cost:2, desc:'Bloque les cases ennemies proches', color:'#ff7f50', unlocked:true  },
+  { id:'poison',  emoji:'💜', name:'Poison',    cost:3, desc:'Ronge 2 cases ennemies adjacentes', color:'#c46fff', unlocked:false },
+  { id:'thunder', emoji:'⚡', name:'Foudre',    cost:4, desc:'Détruit 3 cases ennemies éloignées', color:'#ffe94d', unlocked:false },
+];
+
+// Game state
+let grid = [];      // array of cell objects
+let selectedShroom = 0;
+let playerSpores = 3;
+let maxSpores = 5;
+let turn = 'player'; // 'player' | 'enemy'
+let turnCount = 1;
+let gameOver = false;
+let playerTerr = 0, enemyTerr = 0;
+let animating = false;
+
+// Cell object
+function makeCell(row, col, owner=EMPTY) {
+  return { row, col, owner, blocked:0, poison:0, shroom: null,
+           pulse:0, glow:0, shake:0, newlyPlaced:0 };
+}
+
+// Hex geometry helpers
+function hexToPixel(row, col) {
+  const x = HEX_SIZE * (Math.sqrt(3) * col + (row % 2) * Math.sqrt(3)/2);
+  const y = HEX_SIZE * (3/2 * row);
+  return { x, y };
+}
+
+function pixelToHex(px, py) {
+  // Approximate nearest hex
+  let best = null, bestDist = Infinity;
+  for (const cell of grid) {
+    const {x,y} = hexToPixel(cell.row, cell.col);
+    const dx = px - x, dy = py - y;
+    const d = dx*dx + dy*dy;
+    if (d < bestDist) { bestDist = d; best = cell; }
+  }
+  return bestDist < HEX_SIZE*HEX_SIZE ? best : null;
+}
+
+function hexNeighbors(row, col) {
+  const isOdd = row % 2;
+  const dirs = isOdd
+    ? [[0,1],[0,-1],[-1,0],[-1,1],[1,0],[1,1]]
+    : [[0,1],[0,-1],[-1,-1],[-1,0],[1,-1],[1,0]];
+  return dirs.map(([dr,dc]) => getCell(row+dr, col+dc)).filter(Boolean);
+}
+
+function getCell(r, c) {
+  return grid.find(cell => cell.row === r && cell.col === c) || null;
+}
+
+// ── INIT GAME ────────────────────────────────────────────
+function initGame() {
+  // Compute hex size based on screen
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+  const panelH = 160; // bottom panel height
+  const hudH   = 80;
+  const availH = H - panelH - hudH;
+  const availW = W - 20;
+
+  const sizeFromH = availH / (GRID_ROWS * 1.5 + 0.5);
+  const sizeFromW = availW / (GRID_COLS * Math.sqrt(3) + Math.sqrt(3)/2);
+  HEX_SIZE = Math.floor(Math.min(sizeFromH, sizeFromW, 38));
+
+  // Build grid
+  grid = [];
+  for (let r = 0; r < GRID_ROWS; r++) {
+    for (let c = 0; c < GRID_COLS; c++) {
+      grid.push(makeCell(r, c));
+    }
+  }
+
+  // Set canvas size
+  const pts = grid.map(cell => hexToPixel(cell.row, cell.col));
+  const maxX = Math.max(...pts.map(p => p.x)) + HEX_SIZE * 1.2;
+  const maxY = Math.max(...pts.map(p => p.y)) + HEX_SIZE * 1.2;
+  hexCanvas.width  = maxX + HEX_SIZE;
+  hexCanvas.height = maxY + HEX_SIZE * 0.6;
+
+  // Offset so hex grid is centered
+  hexCanvas.style.marginTop = `${hudH}px`;
+
+  // Place starting territories
+  // Player: bottom 2 rows, Enemy: top 2 rows
+  for (const cell of grid) {
+    if (cell.row >= GRID_ROWS - 2) cell.owner = PLAYER;
+    else if (cell.row <= 1) cell.owner = ENEMY;
+  }
+
+  // Game vars
+  playerSpores = 3;
+  turn = 'player';
+  turnCount = 1;
+  gameOver = false;
+  selectedShroom = 0;
+  animating = false;
+
+  // Unlock shrooms based on progress
+  SHROOMS[0].unlocked = true;
+  SHROOMS[1].unlocked = true;
+  SHROOMS[2].unlocked = turnCount >= 5;
+  SHROOMS[3].unlocked = turnCount >= 10;
+
+  buildShroomSelector();
+  updateSporesDots();
+  updateHUD();
+  drawGrid();
+  setInfo('Tape une case verte adjacente pour poser ton champignon !');
+}
+
+// ── DRAW ─────────────────────────────────────────────────
+function drawGrid() {
+  hCtx.clearRect(0, 0, hexCanvas.width, hexCanvas.height);
+
+  for (const cell of grid) {
+    drawHex(cell);
+  }
+  // Second pass: draw emojis on top
+  for (const cell of grid) {
+    if (cell.shroom) drawShroomEmoji(cell);
+  }
+}
+
+function hexPath(cx, cy, size) {
+  hCtx.beginPath();
+  for (let i = 0; i < 6; i++) {
+    const angle = (Math.PI / 180) * (60 * i - 30);
+    const x = cx + size * Math.cos(angle);
+    const y = cy + size * Math.sin(angle);
+    i === 0 ? hCtx.moveTo(x, y) : hCtx.lineTo(x, y);
+  }
+  hCtx.closePath();
+}
+
+function drawHex(cell) {
+  const {x, y} = hexToPixel(cell.row, cell.col);
+  const cx = x + HEX_SIZE * 0.6;
+  const cy = y + HEX_SIZE * 0.6;
+  const s = HEX_SIZE - 2;
+
+  // Glow effect
+  if (cell.glow > 0) {
+    hCtx.save();
+    hCtx.shadowBlur = cell.glow * 20;
+    hCtx.shadowColor = cell.owner === PLAYER ? '#7fff4f' : '#e74c3c';
+    cell.glow = Math.max(0, cell.glow - 0.05);
+  }
+
+  // Fill color
+  let fillColor, strokeColor;
+  if (cell.owner === PLAYER) {
+    fillColor   = cell.poison > 0 ? '#9b59b6' : (cell.shroom ? '#4CAF50' : '#2d6a2d');
+    strokeColor = cell.shroom ? '#7fff4f' : '#3d9e3d';
+  } else if (cell.owner === ENEMY) {
+    fillColor   = cell.blocked > 0 ? '#7f3d3d' : '#6a1515';
+    strokeColor = cell.blocked > 0 ? '#a04040' : '#c0392b';
+  } else {
+    fillColor   = '#1a2e1a';
+    strokeColor = '#2d4a2d';
+  }
+
+  hexPath(cx, cy, s);
+  hCtx.fillStyle = fillColor;
+  hCtx.fill();
+  hCtx.strokeStyle = strokeColor;
+  hCtx.lineWidth = cell.shroom ? 2.5 : 1.5;
+  hCtx.stroke();
+
+  if (cell.glow > 0) hCtx.restore();
+
+  // Newly placed pulse ring
+  if (cell.newlyPlaced > 0) {
+    hCtx.save();
+    hexPath(cx, cy, s + (1-cell.newlyPlaced)*8);
+    hCtx.strokeStyle = `rgba(127,255,79,${cell.newlyPlaced * 0.6})`;
+    hCtx.lineWidth = 3;
+    hCtx.stroke();
+    hCtx.restore();
+    cell.newlyPlaced = Math.max(0, cell.newlyPlaced - 0.04);
+  }
+
+  // Blocked indicator
+  if (cell.blocked > 0) {
+    hCtx.save();
+    hCtx.font = `${HEX_SIZE * 0.4}px serif`;
+    hCtx.textAlign = 'center';
+    hCtx.textBaseline = 'middle';
+    hCtx.globalAlpha = 0.7;
+    hCtx.fillText('🚫', cx, cy);
+    hCtx.restore();
+  }
+
+  // Poison indicator
+  if (cell.poison > 0 && cell.owner === ENEMY) {
+    hCtx.save();
+    hCtx.font = `${HEX_SIZE * 0.35}px serif`;
+    hCtx.textAlign = 'center';
+    hCtx.textBaseline = 'middle';
+    hCtx.fillText('☠️', cx, cy);
+    hCtx.restore();
+  }
+
+  // Highlight: adjacent to player and empty = clickable
+  if (cell.owner === EMPTY && isAdjacentToPlayer(cell)) {
+    hexPath(cx, cy, s);
+    hCtx.strokeStyle = 'rgba(127,255,79,0.5)';
+    hCtx.lineWidth = 2;
+    hCtx.stroke();
+    // Subtle green tint
+    hexPath(cx, cy, s);
+    hCtx.fillStyle = 'rgba(127,255,79,0.07)';
+    hCtx.fill();
+  }
+}
+
+function drawShroomEmoji(cell) {
+  const {x, y} = hexToPixel(cell.row, cell.col);
+  const cx = x + HEX_SIZE * 0.6;
+  const cy = y + HEX_SIZE * 0.6;
+  hCtx.save();
+  hCtx.font = `${HEX_SIZE * 0.55}px serif`;
+  hCtx.textAlign = 'center';
+  hCtx.textBaseline = 'middle';
+  hCtx.fillText(cell.shroom.emoji, cx, cy);
+  hCtx.restore();
+}
+
+function isAdjacentToPlayer(cell) {
+  return hexNeighbors(cell.row, cell.col).some(n => n.owner === PLAYER);
+}
+
+function isAdjacentToEnemy(cell) {
+  return hexNeighbors(cell.row, cell.col).some(n => n.owner === ENEMY);
+}
+
+// ── SPORES UI ────────────────────────────────────────────
+function updateSporesDots() {
+  const dots = document.getElementById('sporesDots');
+  dots.innerHTML = '';
+  for (let i = 0; i < maxSpores; i++) {
+    const d = document.createElement('div');
+    d.className = 'spore-dot' + (i < playerSpores ? ' filled' : '');
+    dots.appendChild(d);
+  }
+}
+
+function buildShroomSelector() {
+  const sel = document.getElementById('mushroomSelector');
+  sel.innerHTML = '';
+  SHROOMS.forEach((sh, i) => {
+    const btn = document.createElement('div');
+    btn.className = 'shroom-btn' + (i === selectedShroom ? ' selected' : '') + (!sh.unlocked ? ' locked' : '');
+    btn.innerHTML = `
+      ${!sh.unlocked ? '<span class="lock-icon">🔒</span>' : ''}
+      <span class="shroom-btn-emoji">${sh.emoji}</span>
+      <span class="shroom-btn-name">${sh.name}</span>
+      <span class="shroom-btn-cost">✨${sh.cost}</span>
+    `;
+    if (sh.unlocked) {
+      btn.addEventListener('click', () => {
+        selectedShroom = i;
+        buildShroomSelector();
+        setInfo(sh.desc);
+      });
+    }
+    sel.appendChild(btn);
+  });
+}
+
+// ── HUD ──────────────────────────────────────────────────
+function updateHUD() {
+  const total = grid.length;
+  playerTerr = grid.filter(c => c.owner === PLAYER).length;
+  enemyTerr  = grid.filter(c => c.owner === ENEMY).length;
+
+  document.getElementById('hudPlayer').textContent = playerTerr;
+  document.getElementById('hudEnemy').textContent  = enemyTerr;
+  document.getElementById('barPlayer').style.width = (playerTerr / total * 100) + '%';
+  document.getElementById('barEnemy').style.width  = (enemyTerr  / total * 100) + '%';
+
+  const wc = document.getElementById('waveCounter');
+  if (wc) wc.textContent = `Tour ${turnCount}`;
+}
+
+function setInfo(txt) {
+  document.getElementById('infoText').textContent = txt;
+}
+
+// ── PLAYER ACTION ─────────────────────────────────────────
+function handleTap(px, py) {
+  if (turn !== 'player' || gameOver || animating) return;
+  const cell = pixelToHex(px, py);
+  if (!cell) return;
+
+  const shroom = SHROOMS[selectedShroom];
+  if (!shroom.unlocked) { toast('🔒 Pas encore débloqué !'); return; }
+  if (playerSpores < shroom.cost) { toast(`❌ Pas assez de spores ! (${shroom.cost} requis)`); return; }
+
+  if (shroom.id === 'grass') {
+    // Place on empty adjacent cell
+    if (cell.owner !== EMPTY || !isAdjacentToPlayer(cell)) {
+      setInfo('Place sur une case verte adjacente !'); return;
+    }
+    cell.owner = PLAYER;
+    cell.shroom = { ...shroom };
+    cell.glow = 1;
+    cell.newlyPlaced = 1;
+    playerSpores -= shroom.cost;
+    toast('🌿 +1 territoire !');
+
+  } else if (shroom.id === 'shroom') {
+    // Block enemy adjacent cells
+    if (cell.owner !== PLAYER || !isAdjacentToEnemy(cell)) {
+      setInfo('Place sur une de TES cases proche de l\'ennemi !'); return;
+    }
+    const neighbors = hexNeighbors(cell.row, cell.col).filter(n => n.owner === ENEMY);
+    if (neighbors.length === 0) { setInfo('Doit être proche d\'une case ennemie !'); return; }
+    neighbors.forEach(n => { n.blocked = 3; n.glow = 1; }); // 3 turns blocked
+    cell.shroom = { ...shroom };
+    cell.glow = 1;
+    cell.newlyPlaced = 1;
+    playerSpores -= shroom.cost;
+    toast('🍄 Cases ennemies bloquées !');
+
+  } else if (shroom.id === 'poison') {
+    // Corrode 2 adjacent enemy cells
+    if (cell.owner !== PLAYER || !isAdjacentToEnemy(cell)) {
+      setInfo('Place sur une de TES cases proche de l\'ennemi !'); return;
+    }
+    const neighbors = hexNeighbors(cell.row, cell.col).filter(n => n.owner === ENEMY && n.blocked === 0);
+    if (neighbors.length === 0) { setInfo('Aucune case ennemie accessible !'); return; }
+    const targets = neighbors.slice(0, 2);
+    targets.forEach(n => { n.poison = 3; n.glow = 1; }); // will convert after 3 turns
+    cell.shroom = { ...shroom };
+    cell.glow = 1;
+    cell.newlyPlaced = 1;
+    playerSpores -= shroom.cost;
+    toast('💜 Poison propagé !');
+
+  } else if (shroom.id === 'thunder') {
+    // Destroy 3 enemy cells anywhere adjacent to player
+    const enemyCells = grid.filter(c => c.owner === ENEMY && c.blocked === 0);
+    if (enemyCells.length === 0) { setInfo('Aucune case ennemie à détruire !'); return; }
+    // Sort by distance to player territory: pick closest 3
+    const playerCells = grid.filter(c => c.owner === PLAYER);
+    const scored = enemyCells.map(e => {
+      const minDist = Math.min(...playerCells.map(p =>
+        Math.hypot(e.row - p.row, e.col - p.col)
+      ));
+      return { cell: e, dist: minDist };
+    }).sort((a,b) => a.dist - b.dist);
+    const targets = scored.slice(0, 3).map(s => s.cell);
+    targets.forEach(n => { n.owner = EMPTY; n.shroom = null; n.glow = 1; n.newlyPlaced = 0.8; });
+    playerSpores -= shroom.cost;
+    toast('⚡ Foudre ! 3 cases détruites !');
+  }
+
+  updateSporesDots();
+  updateHUD();
+  drawGrid();
+  checkWinLose();
+}
+
+// ── END TURN ─────────────────────────────────────────────
+function endPlayerTurn() {
+  if (turn !== 'player' || gameOver || animating) return;
+  turn = 'enemy';
+  document.getElementById('turnBadge').textContent = '🔴 TOUR ENNEMI';
+  document.getElementById('turnBadge').className = 'turn-badge enemy-turn';
+  document.getElementById('endTurnBtn').disabled = true;
+
+  // Process poison
+  for (const cell of grid) {
+    if (cell.poison > 0 && cell.owner === ENEMY) {
+      cell.poison--;
+      if (cell.poison === 0) { cell.owner = PLAYER; cell.shroom = null; cell.glow = 1; }
+    }
+  }
+
+  drawGrid();
+  updateHUD();
+
+  // Enemy AI turn after short delay
+  animating = true;
+  setTimeout(() => {
+    enemyTurn();
+  }, 1000);
+}
+
+// ── ENEMY AI ─────────────────────────────────────────────
+function enemyTurn() {
+  turnCount++;
+
+  // Unlock shrooms for player as turns progress
+  if (turnCount >= 4) SHROOMS[2].unlocked = true;
+  if (turnCount >= 8) SHROOMS[3].unlocked = true;
+  buildShroomSelector();
+
+  // Enemy gets spores too (slightly less)
+  const enemySpores = 2 + Math.floor(turnCount / 4);
+
+  // AI strategy: expand toward player, prioritize blocking
+  const emptyCellsNearEnemy = grid.filter(c =>
+    c.owner === EMPTY && hexNeighbors(c.row, c.col).some(n => n.owner === ENEMY)
+  );
+
+  // Score cells: prefer cells that are also near player territory
+  const scored = emptyCellsNearEnemy.map(c => {
+    const nearPlayer = hexNeighbors(c.row, c.col).filter(n => n.owner === PLAYER).length;
+    const rowScore = c.row; // prefer lower rows (toward player)
+    return { cell: c, score: nearPlayer * 3 + rowScore * 0.5 + Math.random() * 0.5 };
+  }).sort((a, b) => b.score - a.score);
+
+  let usedSpores = 0;
+  let moved = 0;
+
+  for (const { cell } of scored) {
+    if (usedSpores >= enemySpores) break;
+    if (cell.blocked > 0) continue;
+    cell.owner = ENEMY;
+    cell.glow = 1;
+    cell.newlyPlaced = 1;
+    usedSpores++;
+    moved++;
+  }
+
+  // Decrease blocked counters
+  for (const cell of grid) {
+    if (cell.blocked > 0) cell.blocked--;
+  }
+
+  // Enemy occasionally uses a "counter-attack": convert a weakly defended player cell
+  if (turnCount >= 5 && Math.random() < 0.35) {
+    const vulnerablePlayerCells = grid.filter(c =>
+      c.owner === PLAYER && !c.shroom &&
+      hexNeighbors(c.row, c.col).filter(n => n.owner === ENEMY).length >= 2
+    );
+    if (vulnerablePlayerCells.length > 0) {
+      const target = vulnerablePlayerCells[Math.floor(Math.random() * vulnerablePlayerCells.length)];
+      target.owner = ENEMY;
+      target.shroom = null;
+      target.glow = 1;
+      target.newlyPlaced = 1;
+    }
+  }
+
+  drawGrid();
+  updateHUD();
+
+  // Back to player
+  setTimeout(() => {
+    turn = 'player';
+    playerSpores = Math.min(maxSpores, playerSpores + 3); // refill spores
+    if (turnCount >= 6) maxSpores = 6;
+    if (turnCount >= 10) maxSpores = 7;
+    document.getElementById('turnBadge').textContent = '🌿 TON TOUR';
+    document.getElementById('turnBadge').className = 'turn-badge player-turn';
+    document.getElementById('endTurnBtn').disabled = false;
+    updateSporesDots();
+    animating = false;
+    setInfo('À toi ! Pose un champignon et clique "Fin du tour"');
+    drawGrid();
+    checkWinLose();
+  }, 600);
+}
+
+// ── WIN / LOSE ────────────────────────────────────────────
+function checkWinLose() {
+  if (gameOver) return;
+  const total = grid.length;
+  const pct   = playerTerr / total;
+  const ePct  = enemyTerr  / total;
+
+  // Win: 65% territory
+  if (pct >= 0.65) { endGame(true, 'Conquête totale !'); return; }
+  // Lose: enemy has 65%
+  if (ePct >= 0.65) { endGame(false, 'Le royaume est perdu...'); return; }
+  // Enemy base wiped
+  if (enemyTerr <= 2) { endGame(true, 'L\'ennemi est vaincu !'); return; }
+  // Player base wiped
+  if (playerTerr <= 2) { endGame(false, 'Ta forêt est détruite !'); return; }
+}
+
+function endGame(win, sub) {
+  gameOver = true;
+  setTimeout(() => {
+    document.getElementById('resultEmoji').textContent = win ? '🏆' : '☠️';
+    document.getElementById('resultTitle').textContent = win ? 'Victoire !' : 'Défaite !';
+    document.getElementById('resultTitle').className = 'result-title ' + (win ? 'win' : 'lose');
+    document.getElementById('resultSub').textContent = sub;
+    document.getElementById('resTurns').textContent  = turnCount;
+    document.getElementById('resPlayer').textContent = playerTerr;
+    document.getElementById('resEnemy').textContent  = enemyTerr;
+    document.getElementById('resultScreen').classList.remove('hidden');
+  }, 600);
+}
+
+// ── TOAST ────────────────────────────────────────────────
+let toastTimeout;
+function toast(msg) {
+  const wrap = document.getElementById('toastWrap');
+  wrap.innerHTML = '';
+  clearTimeout(toastTimeout);
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  el.style.background = 'rgba(20,40,20,0.95)';
+  el.style.border = '2px solid rgba(127,255,79,0.3)';
+  el.style.color = '#fff';
+  wrap.appendChild(el);
+  toastTimeout = setTimeout(() => { wrap.innerHTML = ''; }, 900);
+}
+
+// ── ANIMATION LOOP ───────────────────────────────────────
+function animLoop() {
+  let needRedraw = false;
+  for (const cell of grid) {
+    if (cell.glow > 0 || cell.newlyPlaced > 0) { needRedraw = true; break; }
+  }
+  if (needRedraw) drawGrid();
+  requestAnimationFrame(animLoop);
+}
+animLoop();
+
+// ── TOUCH / CLICK ────────────────────────────────────────
+hexCanvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const rect = hexCanvas.getBoundingClientRect();
+  const t = e.changedTouches[0];
+  handleTap(t.clientX - rect.left, t.clientY - rect.top);
+}, { passive: false });
+
+hexCanvas.addEventListener('click', e => {
+  const rect = hexCanvas.getBoundingClientRect();
+  handleTap(e.clientX - rect.left, e.clientY - rect.top);
+});
+
+document.getElementById('endTurnBtn').addEventListener('click', endPlayerTurn);
+
+// ── BUTTONS ──────────────────────────────────────────────
+document.getElementById('startBtn').addEventListener('click', () => {
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('hud').style.display = '';
+  document.getElementById('turnBar').style.display = '';
+  document.getElementById('bottomPanel').style.display = '';
+  document.getElementById('infoPanel').style.display = '';
+  document.getElementById('waveCounter').style.display = '';
+  initGame();
+});
+
+document.getElementById('retryBtn').addEventListener('click', () => {
+  document.getElementById('resultScreen').classList.add('hidden');
+  initGame();
+});
+
+// Hide game UI on start
+document.getElementById('hud').style.display = 'none';
+document.getElementById('turnBar').style.display = 'none';
+document.getElementById('bottomPanel').style.display = 'none';
+document.getElementById('infoPanel').style.display = 'none';
+if (document.getElementById('waveCounter'))
+  document.getElementById('waveCounter').style.display = 'none';
+</script>
+</body>
+</html>
