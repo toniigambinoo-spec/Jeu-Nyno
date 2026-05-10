@@ -197,31 +197,190 @@ background:repeating-linear-gradient(to bottom,rgba(255,255,255,.07) 0,rgba(255,
 .star{position:absolute;border-radius:50%;background:#fff;animation:twinkle var(–d,2s) ease-in-out infinite;}
 @keyframes twinkle{0%,100%{opacity:var(–a,.25);}50%{opacity:.9;}}
 
-/* ── Units ── */
+/* ══ UNITS ══ */
 #unitsLayer{position:absolute;inset:0;pointer-events:none;}
-.unit{position:absolute;display:flex;flex-direction:column;align-items:center;z-index:8;transform:translateX(-50%);}
-.unit-badge{
-background:rgba(5,8,18,.8);border:1px solid rgba(255,255,255,.1);
-border-radius:10px;padding:1px 5px;
-display:flex;flex-direction:column;align-items:center;gap:1px;margin-bottom:1px;}
-.unit-name{font-family:var(–font-h);font-size:.3rem;color:rgba(255,255,255,.55);letter-spacing:.3px;white-space:nowrap;}
-.unit-emoji-el{font-size:1.4rem;line-height:1;filter:drop-shadow(0 2px 6px rgba(0,0,0,.9));}
-.unit-hpbar-wrap{width:26px;height:3px;background:rgba(0,0,0,.6);border-radius:3px;overflow:hidden;margin-top:1px;border:1px solid rgba(255,255,255,.07);}
-.unit-hpbar{height:100%;border-radius:3px;transition:width .15s;}
-.is-player .unit-hpbar{background:linear-gradient(90deg,#1a8a3a,#2ecc71);}
-.is-enemy  .unit-hpbar{background:linear-gradient(90deg,#8a1a1a,#e74c3c);}
-.unit.is-enemy .unit-badge{border-color:rgba(192,57,43,.3);}
-.unit.is-player .unit-badge{border-color:rgba(39,174,96,.3);}
 
-/* Attack */
-.unit-emoji-el.atk{animation:atkPop .18s ease;}
-@keyframes atkPop{0%,100%{transform:scale(1);}50%{transform:scale(1.45);filter:brightness(1.7) drop-shadow(0 0 10px gold);}}
-/* Hit FX */
-.hit-fx{position:absolute;font-size:1.1rem;z-index:15;animation:hitUp .55s ease forwards;pointer-events:none;}
-@keyframes hitUp{0%{opacity:1;transform:translateY(0) scale(.6);}100%{opacity:0;transform:translateY(-32px) scale(1.1);}}
-/* Spawn ring */
-.spawn-ring{position:absolute;border-radius:50%;border:2px solid rgba(240,192,64,.7);animation:spawnExpand .4s ease forwards;pointer-events:none;z-index:7;}
-@keyframes spawnExpand{0%{width:10px;height:10px;opacity:1;}100%{width:50px;height:50px;opacity:0;}}
+/* Unit container */
+.unit{
+position:absolute;
+display:flex;flex-direction:column;align-items:center;
+z-index:8;
+transform:translateX(-50%);
+transition:filter .1s;
+will-change:transform,top;}
+
+/* Shadow under unit */
+.unit-shadow{
+width:32px;height:6px;
+background:radial-gradient(ellipse,rgba(0,0,0,.55) 0%,transparent 75%);
+border-radius:50%;
+margin-top:-4px;
+order:3;}
+
+/* The big emoji body */
+.unit-body{
+position:relative;
+display:flex;align-items:center;justify-content:center;
+order:2;}
+
+.unit-emoji-el{
+font-size:2.2rem;
+line-height:1;
+display:block;
+filter:drop-shadow(0 3px 8px rgba(0,0,0,.9));
+transform-origin:center bottom;}
+
+/* Walk bounce */
+@keyframes walkBounce{
+0%,100%{transform:translateY(0) scaleX(1);}
+25%{transform:translateY(-3px) scaleX(.96);}
+75%{transform:translateY(-1px) scaleX(1.02);}
+}
+.unit.walking .unit-emoji-el{
+animation:walkBounce .45s ease-in-out infinite;}
+/* Slow units bounce slower */
+.unit.walking.slow-walk .unit-emoji-el{
+animation-duration:.7s;}
+/* Fast units bounce faster */
+.unit.walking.fast-walk .unit-emoji-el{
+animation-duration:.28s;}
+
+/* Attack swing */
+@keyframes atkSwing{
+0%{transform:scale(1) rotate(0deg);}
+20%{transform:scale(1.5) rotate(-12deg) translateY(-4px);}
+45%{transform:scale(1.6) rotate(8deg);}
+70%{transform:scale(1.3) rotate(-4deg);}
+100%{transform:scale(1) rotate(0deg);}
+}
+.unit-emoji-el.atk{
+animation:atkSwing .32s cubic-bezier(.36,.07,.19,.97) forwards!important;
+filter:drop-shadow(0 0 14px gold) drop-shadow(0 3px 8px rgba(0,0,0,.9))!important;}
+
+/* Death */
+@keyframes dieSpin{
+0%{transform:scale(1) rotate(0);opacity:1;}
+60%{transform:scale(.5) rotate(200deg);opacity:.6;}
+100%{transform:scale(0) rotate(360deg);opacity:0;}
+}
+.unit.dying .unit-emoji-el{
+animation:dieSpin .5s ease-in forwards!important;}
+
+/* Flip enemy units so they face down */
+.unit.is-enemy .unit-emoji-el{transform:scaleX(-1);}
+.unit.is-enemy .unit-emoji-el.atk{
+animation:atkSwingFlip .32s cubic-bezier(.36,.07,.19,.97) forwards!important;
+filter:drop-shadow(0 0 14px #e74c3c) drop-shadow(0 3px 8px rgba(0,0,0,.9))!important;}
+@keyframes atkSwingFlip{
+0%{transform:scaleX(-1) scale(1) rotate(0);}
+20%{transform:scaleX(-1) scale(1.5) rotate(12deg) translateY(-4px);}
+45%{transform:scaleX(-1) scale(1.6) rotate(-8deg);}
+70%{transform:scaleX(-1) scale(1.3) rotate(4deg);}
+100%{transform:scaleX(-1) scale(1) rotate(0);}
+}
+
+/* HP bar — above unit */
+.unit-hud{
+display:flex;flex-direction:column;align-items:center;gap:2px;
+margin-bottom:3px;order:1;}
+.unit-name-tag{
+font-family:var(–font-h);font-size:.32rem;
+letter-spacing:.5px;white-space:nowrap;
+padding:1px 5px;border-radius:3px;
+background:rgba(5,8,18,.75);
+color:rgba(255,255,255,.6);}
+.unit-hpbar-wrap{
+width:36px;height:5px;
+background:rgba(0,0,0,.7);
+border-radius:5px;overflow:hidden;
+border:1px solid rgba(255,255,255,.12);
+box-shadow:0 1px 4px rgba(0,0,0,.5);}
+.unit-hpbar{
+height:100%;border-radius:5px;
+transition:width .12s ease;}
+.is-player .unit-hpbar{background:linear-gradient(90deg,#1a7a32,#2ecc71);box-shadow:0 0 4px rgba(46,204,113,.6);}
+.is-enemy  .unit-hpbar{background:linear-gradient(90deg,#7a1a1a,#e74c3c);box-shadow:0 0 4px rgba(231,76,60,.6);}
+
+/* Level/type badge */
+.unit-type-pip{
+position:absolute;top:-4px;right:-6px;
+width:14px;height:14px;border-radius:50%;
+font-size:.55rem;display:flex;align-items:center;justify-content:center;
+border:1.5px solid rgba(0,0,0,.5);
+box-shadow:0 1px 4px rgba(0,0,0,.6);}
+.unit-type-pip.player{background:#1a6b3a;}
+.unit-type-pip.enemy{background:#7b0000;}
+
+/* Idle breathing */
+@keyframes breathe{
+0%,100%{transform:scaleY(1);}
+50%{transform:scaleY(1.04);}
+}
+.unit.idle .unit-emoji-el:not(.atk){
+animation:breathe 1.8s ease-in-out infinite;}
+.unit.is-enemy.idle .unit-emoji-el:not(.atk){
+transform:scaleX(-1);
+animation:breatheFlip 1.8s ease-in-out infinite;}
+@keyframes breatheFlip{
+0%,100%{transform:scaleX(-1) scaleY(1);}
+50%{transform:scaleX(-1) scaleY(1.04);}
+}
+
+/* ── Hit FX ── */
+.hit-fx{
+position:absolute;z-index:20;
+pointer-events:none;
+animation:hitUp .6s ease forwards;}
+@keyframes hitUp{
+0%{opacity:1;transform:translateY(0) scale(.5);}
+40%{opacity:1;transform:translateY(-18px) scale(1.2);}
+100%{opacity:0;transform:translateY(-38px) scale(.8);}
+}
+.hit-fx.big{font-size:1.6rem;}
+.hit-fx.small{font-size:.9rem;}
+
+/* Damage number */
+.dmg-num{
+position:absolute;z-index:21;
+font-family:var(–font-h);font-weight:700;
+pointer-events:none;
+text-shadow:0 1px 4px rgba(0,0,0,.9);
+animation:dmgFloat .7s ease forwards;}
+@keyframes dmgFloat{
+0%{opacity:1;transform:translateY(0) scale(.8);}
+30%{opacity:1;transform:translateY(-20px) scale(1.1);}
+100%{opacity:0;transform:translateY(-44px) scale(.9);}
+}
+.dmg-num.player-dmg{color:#ffe94d;font-size:.85rem;}
+.dmg-num.enemy-dmg{color:#ff6b5b;font-size:.85rem;}
+.dmg-num.big-dmg{font-size:1.1rem!important;color:#fff;}
+
+/* ── Spawn ring ── */
+.spawn-ring{
+position:absolute;border-radius:50%;
+border:2.5px solid rgba(240,192,64,.8);
+box-shadow:0 0 12px rgba(240,192,64,.4);
+animation:spawnExpand .45s ease-out forwards;
+pointer-events:none;z-index:7;}
+@keyframes spawnExpand{
+0%{width:8px;height:8px;opacity:1;transform:translate(-50%,-50%);}
+100%{width:60px;height:60px;opacity:0;transform:translate(-50%,-50%);}
+}
+
+/* ── Tower unit ── */
+.unit.is-tower .unit-emoji-el{font-size:2.6rem;}
+.unit.is-tower{z-index:6;}
+
+/* ── Projectile ── */
+.projectile{
+position:absolute;z-index:16;pointer-events:none;
+font-size:1rem;
+animation:projFly var(–dur,.3s) linear forwards;}
+@keyframes projFly{
+0%{opacity:1;transform:translate(0,0) scale(1);}
+80%{opacity:1;}
+100%{opacity:0;transform:translate(var(–tx),var(–ty)) scale(.5);}
+}
 
 /* ── Player castle bottom ── */
 #playerCastleZone{
@@ -709,19 +868,45 @@ function playCard(idx){
 // ── SPAWN ──────────────────────────────────────────
 function spawnUnit(def,y,isPlayer){
   const fRect=battlefield.getBoundingClientRect();
-  const cx=(fRect.width||window.innerWidth)/2;
+  const fw=fRect.width||window.innerWidth;
+  // Slight random X offset so units don't perfectly stack
+  const spread=(def.tower||def.spd===0)?0:(Math.random()-0.5)*18;
+  const cx=fw/2+spread;
+  const thisUid=++uid;
+  const walkClass=def.spd>=0.9?'fast-walk':def.spd<=0.3?'slow-walk':'';
+  const isTower=def.tower||def.spd===0;
   const el=document.createElement('div');
-  el.className='unit '+(isPlayer?'is-player':'is-enemy');
+  el.className='unit '+(isPlayer?'is-player':'is-enemy')+(isTower?' is-tower':'');
   el.innerHTML=`
-    <div class="unit-badge">
-      <span class="unit-name">${def.name}</span>
+    <div class="unit-hud">
+      <span class="unit-name-tag">${def.name}</span>
+      <div class="unit-hpbar-wrap">
+        <div class="unit-hpbar" id="uhp${thisUid}" style="width:100%"></div>
+      </div>
     </div>
-    <span class="unit-emoji-el">${def.emoji}</span>
-    <div class="unit-hpbar-wrap"><div class="unit-hpbar" id="uhp${++uid}" style="width:100%"></div></div>
+    <div class="unit-body">
+      <span class="unit-emoji-el">${def.emoji}</span>
+      <div class="unit-type-pip ${isPlayer?'player':'enemy'}">${isPlayer?'🟢':'🔴'}</div>
+    </div>
+    <div class="unit-shadow"></div>
   `;
-  el.style.left=cx+'px'; el.style.top=y+'px';
+  el.style.left=cx+'px';
+  el.style.top=y+'px';
+  // Start with spawn scale animation
+  el.style.transform='translateX(-50%) scale(0)';
+  el.style.transition='transform .25s cubic-bezier(.34,1.56,.64,1)';
   unitsLayer.appendChild(el);
-  const u={id:uid,el,def,hp:def.hp,maxHp:def.hp,x:cx,y,isPlayer,tower:def.tower,dead:false,cooldown:0};
+  // Animate in
+  requestAnimationFrame(()=>{
+    el.style.transform='translateX(-50%) scale(1)';
+  });
+  setTimeout(()=>{
+    el.style.transition='';
+    if(!isTower) el.classList.add('walking',walkClass);
+    else el.classList.add('idle');
+  },280);
+
+  const u={id:thisUid,el,def,hp:def.hp,maxHp:def.hp,x:cx,y,isPlayer,tower:isTower,dead:false,cooldown:0,state:'walk'};
   units.push(u); return u;
 }
 
@@ -740,9 +925,9 @@ function spawnEnemy(){
 function spawnRing(x,y){
   const r=document.createElement('div');
   r.className='spawn-ring';
-  r.style.left=(x-5)+'px'; r.style.top=(y-5)+'px';
+  r.style.left=x+'px'; r.style.top=y+'px';
   unitsLayer.appendChild(r);
-  setTimeout(()=>r.remove(),420);
+  setTimeout(()=>r.remove(),480);
 }
 
 // ── GAME LOOP ──────────────────────────────────────
@@ -783,42 +968,163 @@ function gameStep(ts){
         const ahead=u.isPlayer?e.y<u.y:e.y>u.y;
         return ahead&&Math.abs(u.y-e.y)<24;
       });
-      if(!blocked){u.y+=dir*u.def.spd*2.2;u.el.style.top=u.y+'px';}
+      if(!blocked){
+        u.y+=dir*u.def.spd*2.2;
+        u.el.style.top=u.y+'px';
+        // Ensure walking animation
+        if(!u.el.classList.contains('walking')&&!u.el.classList.contains('dying')){
+          u.el.classList.remove('idle');
+          const wc=u.def.spd>=0.9?'fast-walk':u.def.spd<=0.3?'slow-walk':'';
+          u.el.classList.add('walking',wc);
+        }
+      } else {
+        // Blocked = idle
+        if(!u.el.classList.contains('idle')&&!u.el.classList.contains('dying')){
+          u.el.classList.remove('walking','fast-walk','slow-walk');
+          u.el.classList.add('idle');
+        }
+      }
     }
   }
 
-  units=units.filter(u=>{if(u.dead){u.el.remove();return false;}return true;});
+  units=units.filter(u=>{
+    if(u.dead){
+      // If not playing death anim already, remove immediately
+      if(!u.el.classList.contains('dying')) u.el.remove();
+      return false;
+    }
+    return true;
+  });
   renderHand();
   checkWin();
 }
 
 function doAttack(attacker,targetUnit,attackerIsPlayer,fH){
+  // ── Attacker animation ──
   const emojiEl=attacker.el.querySelector('.unit-emoji-el');
-  if(emojiEl){emojiEl.classList.remove('atk');void emojiEl.offsetWidth;emojiEl.classList.add('atk');setTimeout(()=>emojiEl.classList.remove('atk'),200);}
+  if(emojiEl){
+    emojiEl.classList.remove('atk');
+    void emojiEl.offsetWidth;
+    emojiEl.classList.add('atk');
+    setTimeout(()=>emojiEl.classList.remove('atk'),350);
+  }
+  // Switch to idle while attacking
+  attacker.el.classList.remove('walking','fast-walk','slow-walk');
+  attacker.el.classList.add('idle');
+  setTimeout(()=>{
+    if(!attacker.dead&&!attacker.tower){
+      attacker.el.classList.remove('idle');
+      const wc=attacker.def.spd>=0.9?'fast-walk':attacker.def.spd<=0.3?'slow-walk':'';
+      attacker.el.classList.add('walking',wc);
+    }
+  },380);
+
   if(targetUnit){
-    targetUnit.hp-=attacker.def.dmg;
+    const dmg=attacker.def.dmg;
+    targetUnit.hp=Math.max(0,targetUnit.hp-dmg);
+
+    // HP bar update
     const bar=document.getElementById('uhp'+targetUnit.id);
-    if(bar)bar.style.width=Math.max(0,targetUnit.hp/targetUnit.maxHp*100)+'%';
-    showHit(targetUnit.x,targetUnit.y,'💥');
-    if(targetUnit.hp<=0){targetUnit.dead=true;showHit(targetUnit.x,targetUnit.y,'💀');}
+    if(bar){
+      bar.style.width=(targetUnit.hp/targetUnit.maxHp*100)+'%';
+      // Flash red on hit
+      const wrap=bar.parentElement;
+      wrap.style.boxShadow='0 0 8px rgba(255,50,50,.9)';
+      setTimeout(()=>wrap.style.boxShadow='',300);
+    }
+
+    // Hit effect on target
+    const isBigHit=dmg>=4;
+    showHit(targetUnit.x,targetUnit.y,isBigHit?'💥':'⚔️','big');
+    showDmgNum(targetUnit.x,targetUnit.y,dmg,attacker.isPlayer);
+
+    // Projectile for ranged units
+    if(attacker.def.range>55&&!attacker.tower){
+      fireProjectile(attacker,targetUnit);
+    }
+
+    // Death
+    if(targetUnit.hp<=0){
+      targetUnit.dead=true;
+      targetUnit.el.classList.add('dying');
+      targetUnit.el.classList.remove('walking','fast-walk','slow-walk','idle');
+      showHit(targetUnit.x,targetUnit.y,'💀','big');
+      // Death particles
+      for(let i=0;i<3;i++){
+        setTimeout(()=>showHit(
+          targetUnit.x+(Math.random()-0.5)*30,
+          targetUnit.y+(Math.random()-0.5)*20,
+          ['✨','💫','⭐'][Math.floor(Math.random()*3)],'small'
+        ),i*80);
+      }
+      setTimeout(()=>{if(targetUnit.el)targetUnit.el.remove();},520);
+    }
   } else {
+    // Hit castle
+    const dmg=attacker.def.dmg;
+    const bfW=(battlefield.getBoundingClientRect().width||window.innerWidth);
     if(attacker.isPlayer){
-      enemyHp=Math.max(0,enemyHp-attacker.def.dmg);
-      showHit(battlefield.getBoundingClientRect().width/2,25,'🔥');
+      enemyHp=Math.max(0,enemyHp-dmg);
+      showHit(bfW/2,18,'🔥','big');
+      showHit(bfW/2+20,30,'💥','small');
+      showDmgNum(bfW/2,22,dmg,true);
+      shakeElement(document.getElementById('enemyCastleZone'));
     } else {
-      playerHp=Math.max(0,playerHp-attacker.def.dmg);
-      showHit(battlefield.getBoundingClientRect().width/2,fH-25,'🔥');
+      playerHp=Math.max(0,playerHp-dmg);
+      showHit(bfW/2,fH-20,'🔥','big');
+      showHit(bfW/2-15,fH-30,'💥','small');
+      showDmgNum(bfW/2,fH-18,dmg,false);
+      shakeElement(document.getElementById('playerCastleZone'));
     }
     updateHpDisplay();
   }
 }
 
-function showHit(x,y,emoji){
+function showDmgNum(x,y,dmg,isPlayer){
   const el=document.createElement('div');
-  el.className='hit-fx';el.textContent=emoji;
-  el.style.left=(x-10)+'px';el.style.top=y+'px';
+  el.className='dmg-num '+(isPlayer?'enemy-dmg':'player-dmg')+(dmg>=5?' big-dmg':'');
+  el.textContent='-'+dmg;
+  el.style.left=(x-8)+'px';
+  el.style.top=y+'px';
   unitsLayer.appendChild(el);
-  setTimeout(()=>el.remove(),560);
+  setTimeout(()=>el.remove(),750);
+}
+
+function fireProjectile(attacker,target){
+  const proj=document.createElement('div');
+  proj.className='projectile';
+  const pEmoji=attacker.def.range>100?'🏹':attacker.def.id==='wizard'||attacker.def.id==='lich'?'✨':'🗡️';
+  proj.textContent=pEmoji;
+  const dx=target.x-attacker.x;
+  const dy=target.y-attacker.y;
+  const dist=Math.hypot(dx,dy);
+  const dur=Math.min(0.4,dist/300).toFixed(2);
+  proj.style.cssText=`left:${attacker.x}px;top:${attacker.y}px;--tx:${dx}px;--ty:${dy}px;--dur:${dur}s;`;
+  unitsLayer.appendChild(proj);
+  setTimeout(()=>proj.remove(),(dur*1000)+50);
+}
+
+function shakeElement(el){
+  if(!el)return;
+  el.style.animation='none';
+  el.style.transition='transform .06s';
+  el.style.transform='translateX(-4px)';
+  setTimeout(()=>el.style.transform='translateX(4px)',60);
+  setTimeout(()=>el.style.transform='translateX(-2px)',120);
+  setTimeout(()=>{el.style.transform='';el.style.transition='';},180);
+}
+
+function showHit(x,y,emoji,size='big'){
+  const el=document.createElement('div');
+  el.className='hit-fx '+size;
+  el.textContent=emoji;
+  // Random slight offset for variety
+  const ox=(Math.random()-0.5)*16;
+  const oy=(Math.random()-0.5)*12;
+  el.style.left=(x-10+ox)+'px';
+  el.style.top=(y+oy)+'px';
+  unitsLayer.appendChild(el);
+  setTimeout(()=>el.remove(),620);
 }
 
 function updateHpDisplay(){
