@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -25,77 +26,114 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 #startScreen{background:radial-gradient(ellipse at 50% 20%,#0e1e3a,#030608);}
 .s-emblem{font-size:3.8rem;filter:drop-shadow(0 0 24px rgba(240,192,64,.5));animation:emblemFloat 2.5s ease-in-out infinite;}
 @keyframes emblemFloat{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-8px) scale(1.03);}}
-.s-title{font-family:var(--font-t);font-size:1.5rem;line-height:1.15;
-  background:linear-gradient(170deg,#fff8e0 0%,var(--gold) 45%,#b87010 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  margin:8px 0 3px;filter:drop-shadow(0 2px 10px rgba(240,192,64,.25));}
+.s-title{font-family:var(–font-t);font-size:1.5rem;line-height:1.15;
+background:linear-gradient(170deg,#fff8e0 0%,var(–gold) 45%,#b87010 100%);
+-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+margin:8px 0 3px;filter:drop-shadow(0 2px 10px rgba(240,192,64,.25));}
 .s-sub{font-size:.6rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:26px;}
 .s-preview{display:flex;gap:10px;margin-bottom:24px;}
 .s-prev-item{display:flex;flex-direction:column;align-items:center;gap:3px;
-  background:rgba(255,255,255,.04);border:1px solid rgba(240,192,64,.15);
-  border-radius:10px;padding:10px 8px;min-width:56px;}
+background:rgba(255,255,255,.04);border:1px solid rgba(240,192,64,.15);
+border-radius:10px;padding:10px 8px;min-width:56px;}
 .s-prev-item span{font-size:1.5rem;}
-.s-prev-item small{font-size:.48rem;color:var(--gold);letter-spacing:.5px;}
+.s-prev-item small{font-size:.48rem;color:var(–gold);letter-spacing:.5px;}
 .btn-primary{
-  background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 55%,var(--gold3) 100%);
-  border:none;border-radius:4px;padding:14px 44px;
-  font-family:var(--font-h);font-size:.9rem;font-weight:700;letter-spacing:2px;
-  color:#1a0800;cursor:pointer;
-  box-shadow:0 4px 0 #3a2000,0 6px 22px rgba(240,192,64,.3);
-  transition:transform .1s,box-shadow .1s;position:relative;overflow:hidden;}
-.btn-primary::before{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(255,255,255,.18),transparent 50%);pointer-events:none;}
+background:linear-gradient(135deg,var(–gold) 0%,var(–gold2) 55%,var(–gold3) 100%);
+border:none;border-radius:4px;padding:14px 44px;
+font-family:var(–font-h);font-size:.9rem;font-weight:700;letter-spacing:2px;
+color:#1a0800;cursor:pointer;
+box-shadow:0 4px 0 #3a2000,0 6px 22px rgba(240,192,64,.3);
+transition:transform .1s,box-shadow .1s;position:relative;overflow:hidden;}
+.btn-primary::before{content:’’;position:absolute;inset:0;background:linear-gradient(to bottom,rgba(255,255,255,.18),transparent 50%);pointer-events:none;}
 .btn-primary:active{transform:translateY(3px);box-shadow:0 1px 0 #3a2000,0 2px 8px rgba(240,192,64,.2);}
 
 /* ═══ DECK BUILDER ═══ */
-#deckScreen{background:linear-gradient(160deg,#07101e,#030609);overflow-y:auto;justify-content:flex-start;padding:10px 10px 20px;}
-.db-header{display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:8px;width:100%;max-width:420px;}
-.db-title{font-family:var(--font-t);font-size:.95rem;color:var(--gold);}
+#deckScreen{
+background:linear-gradient(160deg,#07101e,#030609);
+overflow:hidden;
+justify-content:flex-start;
+padding:10px 10px 0;
+}
+.db-header{display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:8px;width:100%;max-width:460px;}
+.db-title{font-family:var(–font-t);font-size:.95rem;color:var(–gold);}
 .db-sub{font-size:.55rem;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.28);}
+
 /* Selected deck row */
-.db-deck-row{display:flex;flex-wrap:wrap;gap:4px;padding:7px;width:100%;max-width:420px;
-  background:rgba(0,0,0,.45);border:1px solid rgba(240,192,64,.15);border-radius:8px;margin-bottom:6px;}
-.db-slot{width:42px;height:50px;border:1.5px dashed rgba(240,192,64,.22);border-radius:7px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
-  background:rgba(0,0,0,.3);cursor:pointer;transition:transform .12s;font-size:1.3rem;position:relative;}
+.db-deck-row{display:flex;flex-wrap:nowrap;gap:3px;padding:6px;width:100%;max-width:460px;background:rgba(0,0,0,.45);border:1px solid rgba(240,192,64,.15);border-radius:8px;margin-bottom:6px;overflow:hidden;}
+.db-slot{flex:1;min-width:0;height:44px;border:1.5px dashed rgba(240,192,64,.22);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;background:rgba(0,0,0,.3);cursor:pointer;transition:transform .12s;font-size:.95rem;position:relative;}
 .db-slot.filled{border-style:solid;border-color:rgba(240,192,64,.5);background:rgba(240,192,64,.06);}
 .db-slot:active{transform:scale(.88);}
-.db-slot-name{font-size:.3rem;color:var(--gold);text-align:center;line-height:1.1;}
-.db-slot-cost{position:absolute;top:-4px;right:-4px;background:var(--gold2);border-radius:50%;width:13px;height:13px;font-size:.42rem;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;}
-.db-count{font-size:.58rem;color:rgba(255,255,255,.38);text-align:center;margin-bottom:7px;width:100%;max-width:420px;}
-.db-count b{color:var(--gold);}
+.db-slot-name{font-size:.32rem;color:var(–gold);text-align:center;line-height:1.1;}
+.db-slot-cost{position:absolute;top:-4px;right:-4px;background:var(–gold2);border-radius:50%;width:13px;height:13px;font-size:.42rem;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;}
+.db-count{font-size:.58rem;color:rgba(255,255,255,.38);text-align:center;margin-bottom:7px;width:100%;max-width:460px;}
+.db-count b{color:var(–gold);}
+
 /* Filter tabs */
-.db-filters{display:flex;gap:5px;margin-bottom:6px;width:100%;max-width:420px;}
-.db-filter{flex:1;padding:5px 2px;border:1px solid rgba(255,255,255,.1);border-radius:5px;
-  font-size:.48rem;letter-spacing:.5px;background:rgba(255,255,255,.04);color:rgba(255,255,255,.45);cursor:pointer;transition:all .15s;}
-.db-filter.active{background:rgba(240,192,64,.15);border-color:rgba(240,192,64,.4);color:var(--gold);}
-/* Cards grid */
-.db-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;width:100%;max-width:420px;margin-bottom:12px;}
+.db-filters{display:flex;gap:5px;margin-bottom:8px;width:100%;max-width:460px;}
+.db-filter{flex:1;padding:6px 2px;border:1px solid rgba(255,255,255,.1);border-radius:5px;
+font-size:.5rem;letter-spacing:.5px;background:rgba(255,255,255,.04);color:rgba(255,255,255,.45);cursor:pointer;transition:all .15s;}
+.db-filter.active{background:rgba(240,192,64,.15);border-color:rgba(240,192,64,.4);color:var(–gold);}
+
+/* ── Cards grid : 2 columns, scrollable ── */
+.db-grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:8px;
+width:100%;
+max-width:460px;
+overflow-y:auto;
+flex:1;
+padding-bottom:8px;
+/* hide scrollbar but keep scroll */
+scrollbar-width:none;
+-ms-overflow-style:none;
+}
+.db-grid::-webkit-scrollbar{display:none;}
+
+/* ── Individual card in grid (much bigger) ── */
 .db-card{
-  background:linear-gradient(160deg,#192040,#0c1228);
-  border:1.5px solid rgba(255,255,255,.1);border-radius:10px;
-  padding:7px 3px 5px;display:flex;flex-direction:column;align-items:center;gap:1px;
-  cursor:pointer;transition:all .14s;position:relative;overflow:hidden;}
-.db-card::before{content:'';position:absolute;top:0;left:0;right:0;height:35%;background:linear-gradient(to bottom,rgba(255,255,255,.07),transparent);pointer-events:none;}
-.db-card.sel{border-color:var(--gold);background:linear-gradient(160deg,rgba(240,192,64,.18),rgba(240,192,64,.04));}
+background:linear-gradient(160deg,#192040,#0c1228);
+border:2px solid rgba(255,255,255,.1);border-radius:14px;
+padding:14px 8px 12px;
+display:flex;flex-direction:column;align-items:center;gap:5px;
+cursor:pointer;transition:all .14s;position:relative;overflow:hidden;
+min-height:130px;
+}
+.db-card::before{content:’’;position:absolute;top:0;left:0;right:0;height:35%;background:linear-gradient(to bottom,rgba(255,255,255,.07),transparent);pointer-events:none;}
+.db-card.sel{border-color:var(–gold);background:linear-gradient(160deg,rgba(240,192,64,.18),rgba(240,192,64,.04));}
 .db-card.dim{opacity:.28;filter:grayscale(.85);pointer-events:none;}
-.db-card:active:not(.dim){transform:scale(.91);}
-.rarity-bar{position:absolute;top:0;left:0;right:0;height:2px;border-radius:10px 10px 0 0;}
+.db-card:active:not(.dim){transform:scale(.94);}
+
+.rarity-bar{position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0;}
 .r-common{background:rgba(180,180,180,.55);}
 .r-rare{background:linear-gradient(90deg,#3a8ef0,#90c8ff);}
 .r-epic{background:linear-gradient(90deg,#a030e8,#d080ff);}
-.r-legend{background:linear-gradient(90deg,var(--gold),#ff9f43,var(--gold));background-size:200%;animation:shimmer 2s linear infinite;}
+.r-legend{background:linear-gradient(90deg,var(–gold),#ff9f43,var(–gold));background-size:200%;animation:shimmer 2s linear infinite;}
 @keyframes shimmer{0%{background-position:0%;}100%{background-position:200%;}}
-.db-card-emoji{font-size:1.55rem;line-height:1;margin-top:3px;}
-.db-card-name{font-size:.44rem;color:#e8d8a0;letter-spacing:.2px;text-align:center;font-family:var(--font-h);}
-.db-card-rarity{font-size:.36rem;color:rgba(255,255,255,.28);letter-spacing:.5px;}
-.db-card-stats{font-size:.36rem;color:rgba(255,255,255,.38);}
-.db-card-cost{position:absolute;top:3px;right:4px;
-  background:linear-gradient(135deg,var(--gold),var(--gold2));
-  border-radius:50%;width:15px;height:15px;font-size:.5rem;
-  display:flex;align-items:center;justify-content:center;color:#1a0800;font-weight:700;
-  box-shadow:0 1px 4px rgba(0,0,0,.5);}
-.db-card-check{position:absolute;top:3px;left:4px;font-size:.65rem;color:var(--gold);}
-.btn-play-deck{width:100%;max-width:420px;padding:13px;}
+
+.db-card-emoji{font-size:2.6rem;line-height:1;margin-top:6px;}
+.db-card-name{font-size:.7rem;color:#e8d8a0;letter-spacing:.3px;text-align:center;font-family:var(–font-h);font-weight:600;}
+.db-card-rarity{font-size:.52rem;color:rgba(255,255,255,.35);letter-spacing:.8px;text-transform:uppercase;}
+.db-card-stats{
+display:flex;gap:8px;
+font-size:.58rem;color:rgba(255,255,255,.55);
+background:rgba(0,0,0,.3);border-radius:6px;padding:3px 8px;
+}
+.db-card-cost{
+position:absolute;top:6px;right:7px;
+background:linear-gradient(135deg,var(–gold),var(–gold2));
+border-radius:50%;width:22px;height:22px;font-size:.7rem;
+display:flex;align-items:center;justify-content:center;color:#1a0800;font-weight:700;
+box-shadow:0 2px 6px rgba(0,0,0,.5);
+}
+.db-card-check{position:absolute;top:6px;left:8px;font-size:1rem;color:var(–gold);}
+.db-card-desc{font-size:.48rem;color:rgba(255,255,255,.28);text-align:center;font-style:italic;line-height:1.3;}
+
+.btn-play-deck{
+width:100%;max-width:460px;padding:13px;
+flex-shrink:0;
+margin:6px 0 12px;
+}
 .btn-play-deck:disabled{opacity:.35;pointer-events:none;}
 
 /* ═══ GAME ═══ */
@@ -103,91 +141,84 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 
 /* ── Top HUD ── */
 #topHud{
-  flex:0 0 auto;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:5px 10px 3px;
-  background:linear-gradient(to bottom,rgba(3,6,14,.97),transparent);
-  z-index:30;position:relative;}
+flex:0 0 auto;
+display:flex;align-items:center;justify-content:space-between;
+padding:5px 10px 3px;
+background:linear-gradient(to bottom,rgba(3,6,14,.97),transparent);
+z-index:30;position:relative;}
 .hud-castle-info{display:flex;align-items:center;gap:5px;}
 .hud-castle-icon{font-size:1.3rem;filter:drop-shadow(0 2px 5px rgba(0,0,0,.8));}
 .hud-hp-col{display:flex;flex-direction:column;gap:2px;}
 .hud-hp-num{font-size:.75rem;font-weight:700;line-height:1;}
-.hud-hp-num.p{color:var(--green3);}
-.hud-hp-num.e{color:var(--red3);text-align:right;}
+.hud-hp-num.p{color:var(–green3);}
+.hud-hp-num.e{color:var(–red3);text-align:right;}
 .hud-bar-h{width:72px;height:6px;background:rgba(0,0,0,.5);border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,.1);}
 .hud-bar-fill{height:100%;border-radius:6px;transition:width .4s ease;}
 .hud-bar-fill.p{background:linear-gradient(90deg,#1a6b3a,#2ecc71);box-shadow:0 0 5px rgba(46,204,113,.5);}
 .hud-bar-fill.e{background:linear-gradient(90deg,#7b0000,#e74c3c);box-shadow:0 0 5px rgba(231,76,60,.5);}
 /* Timer */
 .hud-timer{
-  font-family:var(--font-t);font-size:1rem;color:var(--gold);
-  text-shadow:0 0 12px rgba(240,192,64,.5);
-  background:rgba(0,0,0,.4);border:1px solid rgba(240,192,64,.2);
-  border-radius:6px;padding:3px 10px;letter-spacing:1px;}
+font-family:var(–font-t);font-size:1rem;color:var(–gold);
+text-shadow:0 0 12px rgba(240,192,64,.5);
+background:rgba(0,0,0,.4);border:1px solid rgba(240,192,64,.2);
+border-radius:6px;padding:3px 10px;letter-spacing:1px;}
 .hud-timer.urgent{color:#ff6b5b;animation:urgentPulse .5s ease-in-out infinite alternate;}
 @keyframes urgentPulse{0%{text-shadow:0 0 8px rgba(255,107,91,.4);}100%{text-shadow:0 0 20px rgba(255,107,91,.9);}}
 
 /* ── BATTLEFIELD ── */
 #battlefield{
-  flex:1;position:relative;overflow:hidden;cursor:crosshair;}
-/* Rich layered bg */
+flex:1;position:relative;overflow:hidden;cursor:crosshair;}
 .bf-sky{position:absolute;inset:0;
-  background:linear-gradient(to bottom,#030a1a 0%,#071428 20%,#0e1f10 52%,#081408 72%,#040b04 100%);}
-/* River / divider line */
+background:linear-gradient(to bottom,#030a1a 0%,#071428 20%,#0e1f10 52%,#081408 72%,#040b04 100%);}
 .bf-river{
-  position:absolute;left:0;right:0;
-  top:50%;transform:translateY(-50%);
-  height:3px;
-  background:linear-gradient(90deg,transparent,rgba(100,160,240,.4),rgba(140,200,255,.6),rgba(100,160,240,.4),transparent);
-  box-shadow:0 0 12px rgba(120,180,255,.3);z-index:2;}
+position:absolute;left:0;right:0;
+top:50%;transform:translateY(-50%);
+height:3px;
+background:linear-gradient(90deg,transparent,rgba(100,160,240,.4),rgba(140,200,255,.6),rgba(100,160,240,.4),transparent);
+box-shadow:0 0 12px rgba(120,180,255,.3);z-index:2;}
 .bf-river-label-p{position:absolute;left:50%;transform:translateX(-50%);top:calc(50% + 5px);
-  font-size:.42rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.18);z-index:3;}
-/* Half tint overlays */
+font-size:.42rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.18);z-index:3;}
 .bf-half-p{position:absolute;left:0;right:0;top:50%;bottom:0;
-  background:rgba(39,174,96,.04);pointer-events:none;z-index:1;}
+background:rgba(39,174,96,.04);pointer-events:none;z-index:1;}
 .bf-half-e{position:absolute;left:0;right:0;top:0;bottom:50%;
-  background:rgba(192,57,43,.04);pointer-events:none;z-index:1;}
-/* Deploy zone pulse when card selected */
+background:rgba(192,57,43,.04);pointer-events:none;z-index:1;}
 .bf-deploy-hint{
-  position:absolute;left:0;right:0;top:50%;bottom:0;
-  border:2px dashed rgba(39,174,96,.0);
-  pointer-events:none;z-index:4;transition:border-color .25s,background .25s;}
+position:absolute;left:0;right:0;top:50%;bottom:0;
+border:2px dashed rgba(39,174,96,.0);
+pointer-events:none;z-index:4;transition:border-color .25s,background .25s;}
 .bf-deploy-hint.active{
-  border-color:rgba(39,174,96,.45);
-  background:rgba(39,174,96,.06);}
-/* Stars */
-.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle var(--d,2s) ease-in-out infinite;}
-@keyframes twinkle{0%,100%{opacity:var(--a,.2);}50%{opacity:.85;}}
-/* Trees */
-.tree{position:absolute;font-size:1.2rem;opacity:.65;animation:sway var(--d,4s) ease-in-out infinite alternate;}
+border-color:rgba(39,174,96,.45);
+background:rgba(39,174,96,.06);}
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle var(–d,2s) ease-in-out infinite;}
+@keyframes twinkle{0%,100%{opacity:var(–a,.2);}50%{opacity:.85;}}
+.tree{position:absolute;font-size:1.2rem;opacity:.65;animation:sway var(–d,4s) ease-in-out infinite alternate;}
 @keyframes sway{0%{transform:rotate(-2deg);}100%{transform:rotate(2deg);}}
-/* Moon */
 .moon{position:absolute;top:5%;right:18%;width:26px;height:26px;border-radius:50%;
-  background:radial-gradient(circle at 35% 35%,#fffbe0,#d8c060);
-  box-shadow:0 0 18px rgba(255,240,150,.35),0 0 50px rgba(255,240,150,.1);}
+background:radial-gradient(circle at 35% 35%,#fffbe0,#d8c060);
+box-shadow:0 0 18px rgba(255,240,150,.35),0 0 50px rgba(255,240,150,.1);}
 
 /* Lanes */
 .lane{position:absolute;top:0;bottom:0;width:28%;background:linear-gradient(to bottom,#3a2e1e,#4a3a28,#3a2e1e);
-  border-left:1px solid rgba(255,255,255,.04);border-right:1px solid rgba(0,0,0,.35);}
+border-left:1px solid rgba(255,255,255,.04);border-right:1px solid rgba(0,0,0,.35);}
 .lane.left{left:10%;}
 .lane.right{right:10%;}
 .lane.center{left:50%;transform:translateX(-50%);}
 .lane-stones{position:absolute;left:50%;transform:translateX(-50%);width:3px;top:0;bottom:0;
-  background:repeating-linear-gradient(to bottom,rgba(255,255,255,.07) 0,rgba(255,255,255,.07) 10px,transparent 10px,transparent 22px);}
+background:repeating-linear-gradient(to bottom,rgba(255,255,255,.07) 0,rgba(255,255,255,.07) 10px,transparent 10px,transparent 22px);}
 
 /* ── BASES ── */
 .base{
-  position:absolute;
-  display:flex;flex-direction:column;align-items:center;
-  z-index:8;transform:translateX(-50%);}
+position:absolute;
+display:flex;flex-direction:column;align-items:center;
+z-index:8;transform:translateX(-50%);}
 .base-icon{font-size:2.4rem;line-height:1;filter:drop-shadow(0 4px 14px rgba(0,0,0,.9));transition:transform .1s;}
 .base-icon.tower-icon{font-size:2rem;}
 .base-hp-pill{
-  display:flex;align-items:center;gap:4px;
-  padding:2px 7px;border-radius:14px;margin-top:2px;
-  font-size:.65rem;font-weight:700;line-height:1;}
-.base-hp-pill.p{background:rgba(39,174,96,.2);border:1px solid rgba(39,174,96,.4);color:var(--green3);}
-.base-hp-pill.e{background:rgba(192,57,43,.2);border:1px solid rgba(192,57,43,.4);color:var(--red3);}
+display:flex;align-items:center;gap:4px;
+padding:2px 7px;border-radius:14px;margin-top:2px;
+font-size:.65rem;font-weight:700;line-height:1;}
+.base-hp-pill.p{background:rgba(39,174,96,.2);border:1px solid rgba(39,174,96,.4);color:var(–green3);}
+.base-hp-pill.e{background:rgba(192,57,43,.2);border:1px solid rgba(192,57,43,.4);color:var(–red3);}
 .base-bar{width:40px;height:4px;background:rgba(0,0,0,.5);border-radius:4px;overflow:hidden;margin-top:2px;border:1px solid rgba(255,255,255,.1);}
 .base-bar-fill{height:100%;border-radius:4px;transition:width .4s ease;}
 .base-bar-fill.p{background:linear-gradient(90deg,#1a6b3a,#2ecc71);}
@@ -206,7 +237,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 .unit-body{position:relative;order:2;}
 .unit-emoji-el{font-size:2rem;line-height:1;display:block;filter:drop-shadow(0 3px 8px rgba(0,0,0,.9));}
 .unit-shadow{width:28px;height:5px;background:radial-gradient(ellipse,rgba(0,0,0,.5),transparent 75%);border-radius:50%;margin-top:-3px;order:3;}
-/* Animations */
 @keyframes walkB{0%,100%{transform:translateY(0) scaleX(1);}30%{transform:translateY(-3px) scaleX(.96);}70%{transform:translateY(-1px) scaleX(1.02);}}
 .unit.walking .unit-emoji-el{animation:walkB .42s ease-in-out infinite;}
 .unit.walking.fast-walk .unit-emoji-el{animation-duration:.25s;}
@@ -222,63 +252,62 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 @keyframes atkSwingF{0%{transform:scaleX(-1)scale(1)rotate(0);}25%{transform:scaleX(-1)scale(1.55)rotate(14deg)translateY(-5px);}55%{transform:scaleX(-1)scale(1.65)rotate(-10deg);}80%{transform:scaleX(-1)scale(1.25)rotate(3deg);}100%{transform:scaleX(-1)scale(1)rotate(0);}}
 @keyframes dieSpin{0%{transform:scale(1)rotate(0);opacity:1;}60%{transform:scale(.4)rotate(220deg);opacity:.5;}100%{transform:scale(0)rotate(380deg);opacity:0;}}
 .unit.dying .unit-emoji-el{animation:dieSpin .5s ease-in forwards!important;}
-/* Hit fx */
 .hit-fx{position:absolute;z-index:20;pointer-events:none;animation:hitUp .58s ease forwards;}
 @keyframes hitUp{0%{opacity:1;transform:translateY(0)scale(.5);}40%{opacity:1;transform:translateY(-16px)scale(1.2);}100%{opacity:0;transform:translateY(-36px)scale(.8);}}
 .hit-fx.big{font-size:1.5rem;}.hit-fx.small{font-size:.85rem;}
 .dmg-num{position:absolute;z-index:21;pointer-events:none;font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,.9);animation:dmgFloat .7s ease forwards;}
 @keyframes dmgFloat{0%{opacity:1;transform:translateY(0)scale(.8);}30%{opacity:1;transform:translateY(-18px)scale(1.1);}100%{opacity:0;transform:translateY(-42px)scale(.9);}}
 .dmg-num.pdmg{color:#ffe94d;font-size:.8rem;}.dmg-num.edmg{color:#ff8080;font-size:.8rem;}.dmg-num.bigdmg{font-size:1.1rem!important;color:#fff;}
-.projectile{position:absolute;z-index:16;pointer-events:none;font-size:.9rem;animation:projFly var(--dur,.3s) linear forwards;}
-@keyframes projFly{0%{opacity:1;transform:translate(0,0)scale(1);}80%{opacity:1;}100%{opacity:0;transform:translate(var(--tx),var(--ty))scale(.4);}}
+.projectile{position:absolute;z-index:16;pointer-events:none;font-size:.9rem;animation:projFly var(–dur,.3s) linear forwards;}
+@keyframes projFly{0%{opacity:1;transform:translate(0,0)scale(1);}80%{opacity:1;}100%{opacity:0;transform:translate(var(–tx),var(–ty))scale(.4);}}
 .spawn-ring{position:absolute;border-radius:50%;border:2px solid rgba(240,192,64,.75);box-shadow:0 0 10px rgba(240,192,64,.3);animation:spawnExp .4s ease-out forwards;pointer-events:none;z-index:5;}
 @keyframes spawnExp{0%{width:6px;height:6px;opacity:1;transform:translate(-50%,-50%);}100%{width:52px;height:52px;opacity:0;transform:translate(-50%,-50%);}}
 
 /* ── ELIXIR ── */
 #elixirZone{
-  flex:0 0 auto;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  padding:4px 10px 3px;
-  background:rgba(3,6,14,.9);border-top:1px solid rgba(240,192,64,.07);}
+flex:0 0 auto;
+display:flex;align-items:center;justify-content:center;gap:8px;
+padding:4px 10px 3px;
+background:rgba(3,6,14,.9);border-top:1px solid rgba(240,192,64,.07);}
 .elix-label{font-size:.56rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);}
 #elixirBarH{display:flex;flex-direction:row;gap:3px;align-items:center;flex:1;max-width:200px;background:rgba(0,0,0,.4);border:1px solid rgba(240,192,64,.13);border-radius:20px;padding:3px 5px;}
 .edot{flex:1;height:9px;border-radius:8px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.09);transition:background .2s,box-shadow .2s;}
-.edot.filled{background:linear-gradient(90deg,var(--gold2),var(--gold));border-color:var(--gold);box-shadow:0 0 5px rgba(240,192,64,.5);}
-.elix-num{font-size:.72rem;color:var(--gold);font-weight:700;min-width:16px;text-align:right;}
+.edot.filled{background:linear-gradient(90deg,var(–gold2),var(–gold));border-color:var(–gold);box-shadow:0 0 5px rgba(240,192,64,.5);}
+.elix-num{font-size:.72rem;color:var(–gold);font-weight:700;min-width:16px;text-align:right;}
 
 /* ── SELECTED CARD INDICATOR ── */
 #selectedIndicator{
-  flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:8px;
-  padding:2px 10px;background:rgba(3,6,14,.85);
-  min-height:22px;}
+flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:8px;
+padding:2px 10px;background:rgba(3,6,14,.85);
+min-height:22px;}
 .sel-ind-text{font-size:.56rem;letter-spacing:1px;color:rgba(255,255,255,.35);}
 .sel-ind-card{display:flex;align-items:center;gap:5px;
-  background:rgba(240,192,64,.12);border:1px solid rgba(240,192,64,.35);
-  border-radius:6px;padding:2px 8px;}
+background:rgba(240,192,64,.12);border:1px solid rgba(240,192,64,.35);
+border-radius:6px;padding:2px 8px;}
 .sel-ind-emoji{font-size:.9rem;}
-.sel-ind-name{font-size:.55rem;color:var(--gold);letter-spacing:.5px;}
+.sel-ind-name{font-size:.55rem;color:var(–gold);letter-spacing:.5px;}
 .sel-ind-cancel{font-size:.7rem;color:rgba(255,100,100,.7);cursor:pointer;padding:0 4px;}
 
 /* ── CARD HAND ── */
 #cardHand{
-  flex:0 0 auto;display:flex;gap:5px;justify-content:center;align-items:flex-end;
-  padding:4px 8px 10px;
-  background:linear-gradient(to top,rgba(3,5,12,.99) 75%,transparent);}
+flex:0 0 auto;display:flex;gap:5px;justify-content:center;align-items:flex-end;
+padding:4px 8px 10px;
+background:linear-gradient(to top,rgba(3,5,12,.99) 75%,transparent);}
 .card{
-  width:60px;background:linear-gradient(160deg,#1b2845,#0d1630);
-  border:2px solid rgba(240,192,64,.28);border-radius:10px;
-  padding:6px 3px 5px;display:flex;flex-direction:column;align-items:center;gap:1px;
-  cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;
-  position:relative;overflow:hidden;touch-action:none;}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:40%;background:linear-gradient(to bottom,rgba(255,255,255,.08),transparent);pointer-events:none;border-radius:8px 8px 0 0;}
-.card.selected-card{border-color:var(--gold);background:linear-gradient(160deg,rgba(240,192,64,.2),rgba(240,192,64,.05));box-shadow:0 0 18px rgba(240,192,64,.45),0 -3px 0 var(--gold) inset;transform:translateY(-8px);}
+width:60px;background:linear-gradient(160deg,#1b2845,#0d1630);
+border:2px solid rgba(240,192,64,.28);border-radius:10px;
+padding:6px 3px 5px;display:flex;flex-direction:column;align-items:center;gap:1px;
+cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;
+position:relative;overflow:hidden;touch-action:none;}
+.card::before{content:’’;position:absolute;top:0;left:0;right:0;height:40%;background:linear-gradient(to bottom,rgba(255,255,255,.08),transparent);pointer-events:none;border-radius:8px 8px 0 0;}
+.card.selected-card{border-color:var(–gold);background:linear-gradient(160deg,rgba(240,192,64,.2),rgba(240,192,64,.05));box-shadow:0 0 18px rgba(240,192,64,.45),0 -3px 0 var(–gold) inset;transform:translateY(-8px);}
 .card.cant{opacity:.35;filter:grayscale(.7);}
-.card:active:not(.cant){transform:translateY(-4px);border-color:var(--gold);}
+.card:active:not(.cant){transform:translateY(-4px);border-color:var(–gold);}
 .card-rarity-top{position:absolute;top:0;left:0;right:0;height:2.5px;border-radius:10px 10px 0 0;}
 .card-emoji{font-size:1.6rem;line-height:1;margin-top:3px;}
 .card-name{font-size:.43rem;color:#e8d8a0;text-align:center;line-height:1.1;}
 .card-power{font-size:.36rem;color:rgba(255,255,255,.36);}
-.card-cost-b{position:absolute;bottom:4px;right:4px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:50%;width:15px;height:15px;font-size:.5rem;display:flex;align-items:center;justify-content:center;color:#1a0800;font-weight:700;box-shadow:0 1px 5px rgba(0,0,0,.55);}
+.card-cost-b{position:absolute;bottom:4px;right:4px;background:linear-gradient(135deg,var(–gold),var(–gold2));border-radius:50%;width:15px;height:15px;font-size:.5rem;display:flex;align-items:center;justify-content:center;color:#1a0800;font-weight:700;box-shadow:0 1px 5px rgba(0,0,0,.55);}
 .next-hint{display:flex;flex-direction:column;align-items:center;gap:2px;opacity:.5;padding:0 2px;}
 .next-hint-lbl{font-size:.36rem;letter-spacing:.8px;color:rgba(255,255,255,.35);text-transform:uppercase;}
 .next-hint-e{font-size:1rem;filter:grayscale(.5);}
@@ -292,22 +321,24 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 #resultScreen{background:rgba(3,5,10,.97);backdrop-filter:blur(22px);}
 .res-icon{font-size:3.5rem;margin-bottom:8px;animation:resPop .65s cubic-bezier(.34,1.56,.64,1);}
 @keyframes resPop{0%{transform:scale(0)rotate(-20deg);}100%{transform:scale(1)rotate(0);}}
-.res-title{font-family:var(--font-t);font-size:1.55rem;margin-bottom:4px;letter-spacing:1px;}
-.res-title.win{background:linear-gradient(135deg,#fff8e0,var(--gold),#b87010);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.res-title.lose{color:var(--red3);text-shadow:0 0 14px rgba(231,76,60,.4);}
+.res-title{font-family:var(–font-t);font-size:1.55rem;margin-bottom:4px;letter-spacing:1px;}
+.res-title.win{background:linear-gradient(135deg,#fff8e0,var(–gold),#b87010);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.res-title.lose{color:var(–red3);text-shadow:0 0 14px rgba(231,76,60,.4);}
 .res-sub{font-size:.8rem;color:rgba(255,255,255,.3);margin-bottom:18px;font-style:italic;}
 .res-stats{display:flex;gap:8px;margin-bottom:20px;width:100%;max-width:280px;}
 .rs{flex:1;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px 5px;}
-.rs-v{font-size:1.3rem;color:var(--gold);}
+.rs-v{font-size:1.3rem;color:var(–gold);}
 .rs-l{font-size:.48rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.25);}
 .res-btns{display:flex;flex-direction:column;gap:7px;width:100%;max-width:280px;}
-.btn-sec{border:none;border-radius:4px;padding:12px;font-family:var(--font-h);font-size:.8rem;letter-spacing:1.5px;cursor:pointer;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.13);color:rgba(255,255,255,.65);transition:transform .1s;}
+.btn-sec{border:none;border-radius:4px;padding:12px;font-family:var(–font-h);font-size:.8rem;letter-spacing:1.5px;cursor:pointer;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.13);color:rgba(255,255,255,.65);transition:transform .1s;}
 .btn-sec:active{transform:scale(.95);}
 </style>
+
 </head>
 <body>
 
 <!-- ═══ START ═══ -->
+
 <div class="screen" id="startScreen">
   <div class="s-emblem">🏰</div>
   <div class="s-title">Château &<br>Chevaliers</div>
@@ -322,6 +353,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 </div>
 
 <!-- ═══ DECK BUILDER ═══ -->
+
 <div class="screen hidden" id="deckScreen">
   <div class="db-header">
     <div class="db-title">🃏 Mon Deck</div>
@@ -341,6 +373,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 </div>
 
 <!-- ═══ GAME ═══ -->
+
 <div id="gameWrap" style="display:none;flex-direction:column;">
   <!-- HUD -->
   <div id="topHud">
@@ -362,28 +395,24 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
   </div>
 
   <!-- Battlefield -->
+
   <div id="battlefield">
     <div class="bf-sky" id="bfSky"></div>
     <div class="moon"></div>
-    <!-- Lanes -->
     <div class="lane left"><div class="lane-stones"></div></div>
     <div class="lane center"><div class="lane-stones"></div></div>
     <div class="lane right"><div class="lane-stones"></div></div>
-    <!-- River divider -->
     <div class="bf-river"></div>
     <div class="bf-river-label-p">⚔️ &nbsp;LIGNE DE FRONT &nbsp;⚔️</div>
-    <!-- Half tints -->
     <div class="bf-half-p"></div>
     <div class="bf-half-e"></div>
-    <!-- Deploy hint overlay -->
     <div class="bf-deploy-hint" id="deployHint"></div>
-    <!-- Bases layer -->
     <div id="basesLayer"></div>
-    <!-- Units layer -->
     <div id="unitsLayer"></div>
   </div>
 
   <!-- Elixir -->
+
   <div id="elixirZone">
     <span class="elix-label">⚡ Élixir</span>
     <div id="elixirBarH"></div>
@@ -391,15 +420,18 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
   </div>
 
   <!-- Selected card indicator -->
+
   <div id="selectedIndicator"></div>
 
   <!-- Card hand -->
+
   <div id="cardHand"></div>
 </div>
 
 <div id="toastWrap"></div>
 
 <!-- ═══ RESULT ═══ -->
+
 <div class="screen hidden" id="resultScreen">
   <div class="res-icon" id="resIcon">🏆</div>
   <div class="res-title" id="resTitle">Victoire !</div>
@@ -420,11 +452,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 //  CHÂTEAU & CHEVALIERS  v4  —  Clash Royale Layout
 // ════════════════════════════════════════════════════════
 
-// ── 20 PLAYER CARDS ────────────────────────────────────
 const ALL_CARDS=[
   {id:'knight', emoji:'⚔️', name:'Chevalier', hp:6,  dmg:2,spd:.55,range:44,cost:3,tower:false,rarity:'common', desc:'Solide et fiable'},
   {id:'archer',  emoji:'🏹',name:'Archer',    hp:3,  dmg:1,spd:.72,range:88,cost:2,tower:false,rarity:'common', desc:'Rapide, à distance'},
-  {id:'spear',   emoji:'🗡️',name:'Lancier',  hp:4,  dmg:2,spd:.62,range:50,cost:2,tower:false,rarity:'common', desc:'Perce les armures'},
+  {id:'spear',   emoji:'🗡',name:'Lancier',  hp:4,  dmg:2,spd:.62,range:50,cost:2,tower:false,rarity:'common', desc:'Perce les armures'},
   {id:'wolf',    emoji:'🐺',name:'Loup',      hp:4,  dmg:2,spd:1.0,range:38,cost:2,tower:false,rarity:'common', desc:'Très rapide'},
   {id:'bat',     emoji:'🦇',name:'Chauve-souris',hp:2,dmg:1,spd:1.2,range:50,cost:1,tower:false,rarity:'common',desc:'Essaim rapide'},
   {id:'paladin', emoji:'🛡️',name:'Paladin',  hp:12, dmg:2,spd:.40,range:44,cost:4,tower:false,rarity:'rare',   desc:'Tank résistant'},
@@ -449,18 +480,13 @@ const ENEMY_POOL=[
   {id:'skel',    emoji:'🦴',name:'Squelette',   hp:2, dmg:1,spd:.70,range:35,cost:1,tower:false},
   {id:'bat2',    emoji:'🦇',name:'Chauve-souris',hp:2,dmg:1,spd:1.1,range:50,cost:1,tower:false},
   {id:'troll',   emoji:'🧌',name:'Troll',       hp:10,dmg:2,spd:.32,range:44,cost:3,tower:false},
-  {id:'witch',   emoji:'🧙‍♀️',name:'Sorcière',  hp:5, dmg:3,spd:.38,range:88,cost:3,tower:false},
+  {id:'witch',   emoji:'🧙',name:'Sorcière',  hp:5, dmg:3,spd:.38,range:88,cost:3,tower:false},
   {id:'orc',     emoji:'👾',name:'Orc',         hp:8, dmg:3,spd:.45,range:44,cost:3,tower:false},
   {id:'ogre',    emoji:'🦍',name:'Ogre',        hp:20,dmg:4,spd:.22,range:44,cost:5,tower:false},
   {id:'darkwiz', emoji:'🧟',name:'Nécromant',   hp:6, dmg:5,spd:.35,range:90,cost:5,tower:false},
   {id:'demon',   emoji:'😈',name:'Démon',       hp:12,dmg:5,spd:.50,range:60,cost:6,tower:false},
 ];
 
-// ── BASE CONFIG ────────────────────────────────────────
-// 3 player bases (bottom): left tower, right tower, main castle (center bottom)
-// 3 enemy  bases (top):    left tower, right tower, main castle (center top)
-// Positions in % of field width: laneL=20%, center=50%, laneR=80%
-// y: towers at 88%/12% (player/enemy), castles at 94%/6%
 const BASE_DEFS = {
   pTowerL: {isPlayer:true,  main:false, xPct:.20, yPct:.88, hp:15, emoji:'🗼', id:'pTowerL'},
   pTowerR: {isPlayer:true,  main:false, xPct:.80, yPct:.88, hp:15, emoji:'🗼', id:'pTowerR'},
@@ -470,18 +496,16 @@ const BASE_DEFS = {
   eCastle: {isPlayer:false, main:true,  xPct:.50, yPct:.06, hp:30, emoji:'🏯', id:'eCastle'},
 };
 
-// ── STATE ──────────────────────────────────────────────
 let playerDeck=[], dbFilter='all';
-let bases={};        // id -> {def, hp, el, destroyed}
+let bases={};
 let units=[], uid=0, unitsSent=0;
 let elixir=4, maxElixir=10;
 let gameOver=false, startTime=0;
-let selectedCardIdx=-1; // -1 = none selected
+let selectedCardIdx=-1;
 let frameId, elixirItv, enemyTmo, timerItv;
 let cardHand=[], deckCursor=0;
-const GAME_DURATION=180; // 3 min
+const GAME_DURATION=180;
 
-// ── DOM ────────────────────────────────────────────────
 const battlefield = document.getElementById('battlefield');
 const basesLayer  = document.getElementById('basesLayer');
 const unitsLayer  = document.getElementById('unitsLayer');
@@ -514,7 +538,7 @@ function renderDeckBuilder(){
   }
   document.getElementById('dbCount').textContent=playerDeck.length;
 
-  // Grid
+  // Grid — 2 columns, up to 4 rows shown per filter page
   const grid=document.getElementById('dbGrid');
   grid.innerHTML='';
   const filt=dbFilter;
@@ -531,7 +555,8 @@ function renderDeckBuilder(){
       <span class="db-card-emoji">${def.emoji}</span>
       <span class="db-card-name">${def.name}</span>
       <span class="db-card-rarity">${def.rarity}</span>
-      <span class="db-card-stats">❤️${def.hp} ⚔️${def.dmg}</span>`;
+      <span class="db-card-stats">❤️${def.hp} &nbsp;⚔️${def.dmg}</span>
+      <span class="db-card-desc">${def.desc}</span>`;
     if(!dim){
       c.addEventListener('click',()=>{
         if(sel) playerDeck=playerDeck.filter(id=>id!==def.id);
@@ -546,7 +571,6 @@ function renderDeckBuilder(){
   btn.disabled=playerDeck.length!==8;
 }
 
-// Filter tabs
 document.getElementById('dbFilters').addEventListener('click',e=>{
   const f=e.target.dataset.f;
   if(!f)return;
@@ -588,7 +612,6 @@ function startGame(){
     updateHud();
     startTime=Date.now();
 
-    // Timer
     timerItv=setInterval(()=>{
       if(gameOver)return;
       const elapsed=(Date.now()-startTime)/1000;
@@ -600,19 +623,16 @@ function startGame(){
       if(left<=0) endGame(null,'Temps écoulé !');
     },500);
 
-    // Elixir regen
     elixirItv=setInterval(()=>{
       if(gameOver)return;
       if(elixir<maxElixir){elixir++;updateElixir();renderHand();}
     },2200);
 
-    // Enemy AI
     scheduleEnemy();
     frameId=requestAnimationFrame(gameStep);
   }));
 }
 
-// ── ATMOSPHERE ──────────────────────────────────────
 function makeAtmosphere(){
   const sky=document.getElementById('bfSky');
   sky.querySelectorAll('.star,.tree').forEach(e=>e.remove());
@@ -636,7 +656,6 @@ function makeAtmosphere(){
   }
 }
 
-// ── BASES ──────────────────────────────────────────
 function buildBases(){
   basesLayer.innerHTML='';
   bases={};
@@ -682,7 +701,6 @@ function updateBaseDisplay(bId){
 }
 
 function updateHud(){
-  // Sum player / enemy castle hp for main HUD
   const pCastle=bases['pCastle'];
   const eCastle=bases['eCastle'];
   if(!pCastle||!eCastle)return;
@@ -694,7 +712,6 @@ function updateHud(){
   document.getElementById('eHpBar').style.width=(eHp/eCastle.def.hp*100)+'%';
 }
 
-// ── HAND ───────────────────────────────────────────
 function dealHand(){
   cardHand=[];
   for(let i=0;i<4;i++){cardHand.push(playerDeck[i%playerDeck.length]);deckCursor=i+1;}
@@ -719,7 +736,6 @@ function renderHand(){
     card.addEventListener('touchstart',e=>{e.preventDefault();selectCard(idx);},{passive:false});
     cardHandEl.appendChild(card);
   });
-  // Next card hint
   const nxt=playerDeck[deckCursor%playerDeck.length];
   const nd=ALL_CARDS.find(c=>c.id===nxt);
   const hint=document.createElement('div');
@@ -733,7 +749,6 @@ function selectCard(idx){
   const def=ALL_CARDS.find(c=>c.id===cardHand[idx]);
   if(elixir<def.cost){toast(`❌ Il faut ${def.cost} élixir !`);return;}
   if(selectedCardIdx===idx){
-    // Deselect
     selectedCardIdx=-1;
     document.getElementById('deployHint').classList.remove('active');
   } else {
@@ -763,7 +778,6 @@ function renderSelectedIndicator(){
   });
 }
 
-// ── BATTLEFIELD TAP ────────────────────────────────
 battlefield.addEventListener('click', onBattlefieldTap);
 battlefield.addEventListener('touchend', e=>{
   e.preventDefault();
@@ -778,10 +792,7 @@ function onBattlefieldTap(e){
   const tapY=e.clientY-r.top;
   const tapX=e.clientX-r.left;
   const fh=r.height||1;
-
-  // Must tap in PLAYER half (bottom 50%)
   if(tapY<fh*0.5){toast('⚠️ Pose tes troupes dans ta moitié !');return;}
-
   deployCard(tapX,tapY);
 }
 
@@ -791,14 +802,10 @@ function deployCard(x,y){
   const cardId=cardHand[idx];
   const def=ALL_CARDS.find(c=>c.id===cardId);
   if(elixir<def.cost){toast(`❌ Il faut ${def.cost} élixir !`);return;}
-
   elixir-=def.cost; unitsSent++;
   updateElixir();
-
   spawnUnit(def,x,y,true);
   spawnRing(x,y);
-
-  // Cycle card
   const nextId=playerDeck[deckCursor%playerDeck.length];
   deckCursor++;
   cardHand.splice(idx,1,nextId);
@@ -808,7 +815,6 @@ function deployCard(x,y){
   renderSelectedIndicator();
 }
 
-// ── SPAWN UNIT ─────────────────────────────────────
 function spawnUnit(def,x,y,isPlayer){
   const isTower=def.tower||def.spd===0;
   const spread=isTower?0:(Math.random()-0.5)*20;
@@ -834,7 +840,6 @@ function spawnUnit(def,x,y,isPlayer){
     el.style.transition='';
     el.classList.add(isTower?'idle':('walking '+(wClass||'')).trim());
   },240);
-
   const u={id:thisUid,el,def,hp:def.hp,maxHp:def.hp,x:sx,y,isPlayer,tower:isTower,dead:false,cooldown:0};
   units.push(u);
   return u;
@@ -848,7 +853,6 @@ function spawnRing(x,y){
   setTimeout(()=>r.remove(),460);
 }
 
-// ── ENEMY AI ───────────────────────────────────────
 function scheduleEnemy(){
   if(gameOver)return;
   const elapsed=(Date.now()-startTime)/1000;
@@ -866,13 +870,11 @@ function spawnEnemyUnit(){
   const bfR=battlefield.getBoundingClientRect();
   const fw=bfR.width||window.innerWidth;
   const fh=bfR.height||400;
-  // Spawn in enemy half with random x
   const x=fw*.18+Math.random()*fw*.64;
   const y=fh*.08+Math.random()*fh*.35;
   spawnUnit(def,x,y,false);
 }
 
-// ── GAME LOOP ──────────────────────────────────────
 const FPS=30,TICK=1000/FPS;
 let lastTick=0;
 
@@ -890,10 +892,8 @@ function gameStep(ts){
     if(u.dead)continue;
     u.cooldown=Math.max(0,u.cooldown-1);
 
-    // Tower: shoot nearest enemy in range
     if(u.tower){
       const foes=units.filter(e=>e.isPlayer!==u.isPlayer&&!e.dead);
-      // Also check enemy bases as targets (towers only attack units, not bases directly)
       let tgt=null,best=Infinity;
       for(const e of foes){
         const d=Math.hypot(u.x-e.x,u.y-e.y);
@@ -903,7 +903,6 @@ function gameStep(ts){
       continue;
     }
 
-    // Find nearest enemy unit
     const foes=units.filter(e=>e.isPlayer!==u.isPlayer&&!e.dead);
     let tgt=null,bestD=Infinity;
     for(const e of foes){
@@ -911,7 +910,6 @@ function gameStep(ts){
       if(d<bestD){bestD=d;tgt=e;}
     }
 
-    // Find nearest enemy BASE
     const enemyBases=Object.values(bases).filter(b=>b.def.isPlayer!==u.isPlayer&&!b.destroyed);
     let btgt=null,bestBD=Infinity;
     for(const b of enemyBases){
@@ -920,7 +918,6 @@ function gameStep(ts){
       if(d<bestBD){bestBD=d;btgt=b;}
     }
 
-    // Priority: attack unit if in range, else move toward nearest enemy base
     if(tgt&&bestD<=u.def.range){
       if(u.cooldown===0){doAttack(u,tgt,null,fw,fh);u.cooldown=Math.round(FPS*.82);}
       setUnitState(u,'idle');
@@ -928,7 +925,6 @@ function gameStep(ts){
       if(u.cooldown===0){doAttackBase(u,btgt,fw,fh);u.cooldown=Math.round(FPS*.85);}
       setUnitState(u,'idle');
     } else {
-      // Move toward nearest enemy base
       if(btgt){
         const bx=btgt.def.xPct*fw, by=btgt.def.yPct*fh;
         const dx=bx-u.x, dy=by-u.y;
@@ -952,7 +948,6 @@ function gameStep(ts){
     }
   }
 
-  // Remove dead
   units=units.filter(u=>{
     if(u.dead){if(!u.el.classList.contains('dying'))u.el.remove();return false;}
     return true;
@@ -1012,7 +1007,6 @@ function doAttackBase(attacker,base,fw,fh){
   showHit(bx,by,'🔥','big');
   showDmgNum(bx,by,dmg,attacker.isPlayer);
   if(attacker.def.range>55)fireProj(attacker,bx,by);
-  // Shake base element
   const bel=document.getElementById('base-'+base.def.id);
   if(bel){bel.style.transform='translateX(-50%) translateX(-4px)';setTimeout(()=>{bel.style.transform='translateX(-50%) translateX(4px)';},60);setTimeout(()=>{bel.style.transform='translateX(-50%)';},130);}
 }
@@ -1062,7 +1056,6 @@ function fireProj(attacker,tx,ty){
   setTimeout(()=>p.remove(),(dur*1000)+60);
 }
 
-// ── ELIXIR ─────────────────────────────────────────
 function updateElixir(){
   elixir=Math.min(maxElixir,Math.max(0,Math.round(elixir)));
   const bar=document.getElementById('elixirBarH');
@@ -1075,7 +1068,6 @@ function updateElixir(){
   document.getElementById('elixNum').textContent=elixir;
 }
 
-// ── WIN / LOSE ─────────────────────────────────────
 function checkWin(){
   if(gameOver)return;
   const pCastle=bases['pCastle'],eCastle=bases['eCastle'];
@@ -1088,10 +1080,7 @@ function endGame(win,sub){
   if(gameOver)return;
   gameOver=true;
   clearInterval(timerItv);clearInterval(elixirItv);clearTimeout(enemyTmo);cancelAnimationFrame(frameId);
-
-  // Count destroyed enemy towers
   const destroyedEnemyTowers=Object.values(bases).filter(b=>!b.def.isPlayer&&b.destroyed).length;
-
   setTimeout(()=>{
     const elapsed=Math.round((Date.now()-startTime)/1000);
     document.getElementById('resIcon').textContent=win===true?'🏆':win===false?'💀':'⚔️';
@@ -1105,7 +1094,6 @@ function endGame(win,sub){
   },700);
 }
 
-// ── TOAST ──────────────────────────────────────────
 let toastTmo;
 function toast(msg){
   clearTimeout(toastTmo);
@@ -1115,12 +1103,12 @@ function toast(msg){
   toastTmo=setTimeout(()=>w.innerHTML='',1200);
 }
 
-// ── RETRY ──────────────────────────────────────────
 document.getElementById('btnRetry').addEventListener('click',()=>{
   document.getElementById('resultScreen').classList.add('hidden');
   units.forEach(u=>u.el&&u.el.remove());
   startGame();
 });
 </script>
+
 </body>
 </html>
